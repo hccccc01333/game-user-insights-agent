@@ -3,3 +3,4 @@ requests>=2.31     # L1 采集器 / Reddit 校准脚本
 pandas>=2.1        # L2/L3 特征与洞察表
 numpy>=1.26        # 校准统计
 pyarrow>=14.0      # features.parquet 读写（L2 可用 --no-parquet 跳过）
+scikit-learn>=1.4  # S2 Uplift：T-learner（HistGBM / Ridge）

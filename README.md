@@ -64,6 +64,10 @@ python L3_insights/build_facts.py
 # 4) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
 python -m simulator.run_sim --no-fit --users 800     # 强制默认分布（公开仓路径）
 python -m simulator.tests                            # 确定性 / 校准 / 边界测试
+
+# 5) （S2）Uplift 干预效果建模：rct / full 双协议 + T-learner（离线可跑）
+python -m uplift.run_uplift --no-fit --users 6000    # 训练 + 评测 + 落盘（默认双跑一致性校验）
+python -m uplift.tests                               # 协议完整性 / 无泄漏 / 策略端点测试
 ```
 
 > L2 / L3 需要本地产出的原始数据（`data/raw/user_profile/`）。
@@ -103,6 +107,7 @@ python -m simulator.tests                            # 确定性 / 校准 / 边�
 ├── L3_insights/                        # 洞察层：活跃度 M1 / 迁移 M2 / 流失 M3 → facts 契约
 ├── harness/                            # 自研 Agent Harness 骨架（state/registry/planner/model/verifier/loop）
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
+├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── scripts/reddit_calibration.py      # Reddit 公开数据 → 模拟器参数校准（分布锚点，非主锚）
 ├── calibration/                       # 校准产出（聚合参数与报告；原始抓取不入库）
 └── data/                              # 本地数据域（不入库）：raw / processed
@@ -125,7 +130,7 @@ python L1_data_source/collectors/taptap/run_batch.py --daily-users 20 --target-t
 |---|---|---|
 | v1 | 真实轨 L1–L3 + harness 契约层（本仓现状） | ✅ |
 | S1 | 用户模拟器：合成人口 + 三臂效应（对照 / 个性化推荐 / 沉默召回）+ 配对奖励 + 真值 CATE | ✅ 本仓 [simulator/](./simulator/) |
-| S2 | Uplift 干预效果建模（标签来自模拟器真值，避免循环论证） | 待做 |
+| S2 | Uplift 干预效果建模（标签来自模拟器真值，避免循环论证） | ✅ 本仓 [uplift/](./uplift/) |
 | S3 | Bandit 策略学习 | 待做 |
 | S4 | 接入 harness：工具 + Critic；决策语义由作者定案 | 待做 |
 | S5 | 展示层 | 待做 |
