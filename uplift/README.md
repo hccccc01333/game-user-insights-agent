@@ -126,7 +126,7 @@ CLI：`--users --days --window --seed --holdout --protocol both|rct|full --learn
 | 上下游 | 用法 |
 |---|---|
 | S1 模拟器 | `from simulator.run_sim import build_tables` 取真值表；本层用 `sim_users` 的四件状态 + `sim_effects` 的结果 / 真值列 |
-| S3 Bandit | `uplift_holdout.csv` 的 `tau_hat_*` 可当离线策略的先验得分；在线迭代直接对 `reward` 做决策（日粒度含疲劳） |
+| S3 Bandit | 见 [bandit/](../bandit/)：批量一次性决策口径（每人一次触达机会、只观测所选臂净奖励，无疲劳），纯在线冷启动；`tau_hat_*` 可当离线先验（闭环注入留给 S4） |
 | harness（Agent） | 干预环节的"效果预估"工具：给状态 → 返回 τ̂ 与是否值得触达的证据链 |
 
 ---
@@ -136,7 +136,7 @@ CLI：`--users --days --window --seed --holdout --protocol both|rct|full --learn
 1. **无真实标签**：真值来自模拟器——价值在"方法验证"（协议对照、无泄漏、可复现），不在"业务数字"。
 2. **协议即假设**：rct 假设完全随机分配、无干扰；真实平台存在选择偏差与曝光机制，v0 未建模。
 3. **rec 臂结论依赖人口**：换人口（fit 路径 / 真实扩采后的分布）数字会变；成本口径改变也会变。
-4. **单次触达**：S1 v0 每人每臂只触达一次，不含重复触达的疲劳序列——留给 S3 的日粒度在线迭代。
+4. **单次触达**：S1 v0 每人每臂只触达一次，不含重复触达的疲劳序列；S3 v0 沿用批量口径（未启用日粒度迭代），疲劳序列留给后续版本。
 5. **模型族有限**：只有 HGB / Ridge，未做超参搜索与交叉拟合（cross-fitting）——v1 候选。
 6. **oracle 只在留出集内排序**：小 k 下方差可见（本仓 1800 留出用户下已稳定）。
 
