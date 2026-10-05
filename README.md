@@ -76,6 +76,10 @@ python -m bandit.tests                               # 无泄漏 / 端点 / 学�
 # 7) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
 python -m harness.run_agent --no-fit --users 6000    # 六环节 + 带/不带 Critic 双模式对照
 python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 端到端测试
+
+# 8) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
+python -m report.build_report                        # 生成 report/index.html + _manifest.json
+python -m report.tests                               # 自包含 / 数字对源 / 隐私扫描测试
 ```
 
 > L2 / L3 需要本地产出的原始数据（`data/raw/user_profile/`）。
@@ -92,6 +96,7 @@ python -m harness.tests                              # 零泄漏 / 门控 / 结�
 | L3 洞察 | `facts.jsonl`（Agent 唯一入口） | 200 行；活跃度五档 49/50/50/30/21；流失档 active 23 · d30 20 · **d60 132** · d90 25 |
 | 复现性 | 双跑逐字节一致；版本 / 锚点 / 输入指纹冻结 | `_manifest.json`（L2 / L3 各一份） |
 | Harness | 六环节骨架 + facts 契约层 + **S4 真干预接入** | `python -m harness.loop`（骨架）/ `python -m harness.run_agent`（双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
+| S5 展示层 | [`report/index.html`](./report/index.html)（静态自包含，离线直开） | 9 节：真实轨 L1–L3 + S1–S4 关键数字 + 诚实边界；双跑逐字节一致（输入指纹冻结在 `_manifest.json`） |
 
 ## 5. 诚实边界（随结论一起引用）
 
@@ -117,6 +122,7 @@ python -m harness.tests                              # 零泄漏 / 门控 / 结�
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── bandit/                             # S3 Bandit：部分反馈世界 + LinUCB/Thompson + 在线/审计两层评测
+├── report/                             # S5 展示层：全链路产出 → 静态自包含 HTML 报告（零依赖 / 离线直开）
 ├── scripts/reddit_calibration.py      # Reddit 公开数据 → 模拟器参数校准（分布锚点，非主锚）
 ├── calibration/                       # 校准产出（聚合参数与报告；原始抓取不入库）
 └── data/                              # 本地数据域（不入库）：raw / processed
@@ -142,7 +148,7 @@ python L1_data_source/collectors/taptap/run_batch.py --daily-users 20 --target-t
 | S2 | Uplift 干预效果建模（标签来自模拟器真值，避免循环论证） | ✅ 本仓 [uplift/](./uplift/) |
 | S3 | Bandit 策略学习（LinUCB / Thompson；在线 + 审计两层评测） | ✅ 本仓 [bandit/](./bandit/) |
 | S4 | 接入 harness：Bandit 干预工具 + Critic 安全门（批量分配 / 保守下界门 / 真圈人） | ✅ 本仓 [harness/](./harness/) |
-| S5 | 展示层 | 待做 |
+| S5 | 展示层：全链路产出汇总为静态自包含 HTML 报告 | ✅ 本仓 [report/](./report/) |
 
 ## 9. 数据来源与边界（三类角色的分工）
 

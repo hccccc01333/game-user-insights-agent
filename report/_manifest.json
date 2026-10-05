@@ -1,0 +1,75 @@
+{
+ "report_version": "s5v0",
+ "generated_at": "2026-10-05T19:28:09+08:00",
+ "inputs_fingerprint": "47ccdef609438562",
+ "sources": {
+  "data/synthetic/_manifest.json": {
+   "sha256": "e33c4008c496a32b",
+   "rows": null
+  },
+  "data/synthetic/uplift/uplift_metrics.json": {
+   "sha256": "692ef7a854ccf32b",
+   "rows": null
+  },
+  "data/synthetic/uplift/uplift_calibration.csv": {
+   "sha256": "a5c00d5712a80b68",
+   "rows": 80
+  },
+  "data/synthetic/bandit/bandit_summary.csv": {
+   "sha256": "55422723d2285a62",
+   "rows": 7
+  },
+  "data/synthetic/bandit/bandit_curve.csv": {
+   "sha256": "aabcb65d4613d5e9",
+   "rows": 29400
+  },
+  "data/synthetic/harness/s4_metrics.json": {
+   "sha256": "3594291c69c8d5c7",
+   "rows": null
+  },
+  "data/synthetic/harness/s4_trace.jsonl": {
+   "sha256": "b8578814a55139d3",
+   "rows": 14
+  },
+  "data/processed/user_features/_manifest.json": {
+   "sha256": "a75dda1b99b5ebe1",
+   "rows": null
+  },
+  "data/processed/user_insights/_manifest.json": {
+   "sha256": "c679cc55f0fd34da",
+   "rows": null
+  }
+ },
+ "sections": [
+  "header",
+  "story",
+  "real-track",
+  "s1",
+  "s2",
+  "s3",
+  "s4",
+  "limits",
+  "footer"
+ ],
+ "highlights": {
+  "s1_recall_mean_reward": 1.356,
+  "s1_rec_mean_reward": -0.37,
+  "s2_recall_model_hgb_at_k20": 2.1861,
+  "s2_recall_oracle_struct_at_k20": 2.3028,
+  "s3_linucb_audit_vs_oracle": 0.803511,
+  "s4_with_critic_veto_rate": 0.025,
+  "s4_with_critic_audit_vs_oracle": 0.787888,
+  "real_track_users": 200,
+  "real_track_events": 9521
+ },
+ "outputs": {
+  "index.html": {
+   "bytes": 27004,
+   "sha256": "49486593ae95cdbd"
+  }
+ },
+ "determinism": {
+  "checked": true,
+  "identical": true
+ }
+}
