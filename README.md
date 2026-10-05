@@ -72,6 +72,10 @@ python -m uplift.tests                               # 协议完整性 / 无泄�
 # 6) （S3）Bandit 策略学习：LinUCB / Thompson + random / 固定臂 / oracle 参照（离线可跑）
 python -m bandit.run_bandit --no-fit --users 6000    # 在线学习 + 审计冻结评测 + 落盘
 python -m bandit.tests                               # 无泄漏 / 端点 / 学习信号测试
+
+# 7) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
+python -m harness.run_agent --no-fit --users 6000    # 六环节 + 带/不带 Critic 双模式对照
+python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 端到端测试
 ```
 
 > L2 / L3 需要本地产出的原始数据（`data/raw/user_profile/`）。
@@ -87,7 +91,7 @@ python -m bandit.tests                               # 无泄漏 / 端点 / 学�
 | L2 特征 | `features.csv`（200 × 99，五维 `id_/act_/taste_/rel_/inf_`）+ `timeline.jsonl` | 9,521 个行为事件（`time_kind = exact / approx / unknown`） |
 | L3 洞察 | `facts.jsonl`（Agent 唯一入口） | 200 行；活跃度五档 49/50/50/30/21；流失档 active 23 · d30 20 · **d60 132** · d90 25 |
 | 复现性 | 双跑逐字节一致；版本 / 锚点 / 输入指纹冻结 | `_manifest.json`（L2 / L3 各一份） |
-| Harness | 六环节骨架 + facts 读取契约层 | `python -m harness.loop` 可复现决策循环演示 |
+| Harness | 六环节骨架 + facts 契约层 + **S4 真干预接入** | `python -m harness.loop`（骨架）/ `python -m harness.run_agent`（双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
 
 ## 5. 诚实边界（随结论一起引用）
 
@@ -109,7 +113,7 @@ python -m bandit.tests                               # 无泄漏 / 端点 / 学�
 │   └── run_batch.py                    #   批次运行器：日预算慢跑 / 自动暂停 / 失败队列
 ├── L2_features/                        # 特征层：feature_dict 单一真源 + 特征表 + 时间线
 ├── L3_insights/                        # 洞察层：活跃度 M1 / 迁移 M2 / 流失 M3 → facts 契约
-├── harness/                            # 自研 Agent Harness 骨架（state/registry/planner/model/verifier/loop）
+├── harness/                            # 自研 Agent Harness：六组件骨架 + S4 接入层（bandit 工具 + Critic + 六环节组装）
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── bandit/                             # S3 Bandit：部分反馈世界 + LinUCB/Thompson + 在线/审计两层评测
@@ -137,7 +141,7 @@ python L1_data_source/collectors/taptap/run_batch.py --daily-users 20 --target-t
 | S1 | 用户模拟器：合成人口 + 三臂效应（对照 / 个性化推荐 / 沉默召回）+ 配对奖励 + 真值 CATE | ✅ 本仓 [simulator/](./simulator/) |
 | S2 | Uplift 干预效果建模（标签来自模拟器真值，避免循环论证） | ✅ 本仓 [uplift/](./uplift/) |
 | S3 | Bandit 策略学习（LinUCB / Thompson；在线 + 审计两层评测） | ✅ 本仓 [bandit/](./bandit/) |
-| S4 | 接入 harness：工具 + Critic；决策语义由作者定案 | 待做 |
+| S4 | 接入 harness：Bandit 干预工具 + Critic 安全门（批量分配 / 保守下界门 / 真圈人） | ✅ 本仓 [harness/](./harness/) |
 | S5 | 展示层 | 待做 |
 
 ## 9. 数据来源与边界（三类角色的分工）

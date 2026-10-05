@@ -1,7 +1,8 @@
-"""harness —— 自研 Agent Harness（薄骨架）。
+"""harness —— 自研 Agent Harness。
 
 这个包的定位：先把"组件的壳"和"最小可运行循环"搭出来，
-每个组件的真实设计留在各文件的「待定设计点」里逐条定案。
+每个组件的真实设计留在各文件的「待定设计点」里逐条定案；
+S4 起，干预环节由"占位工具"升级为真调用（Bandit 策略 + Critic）。
 
 组件地图（对应业务闭环：发现异常→定位人群→分析原因→识别风险→制定干预→设计实验）：
 
@@ -12,6 +13,20 @@
     verifier.py  Verifier      对每轮结果做校验与把关
     loop.py      run()         把以上组件串成的运行循环
 
+S4 接入层（把 S1–S3 的模拟环境资产接进决策循环）：
+
+    critic.py      InterventionCritic / CriticVerifier  保守下界门 + 循环级校验
+    bandit_tools.py InterventionConsole                 干预台：选臂→复核→结算→学习
+    run_agent.py   六环节组装 + CLI（带 / 不带 Critic 双模式对照）
+    tests.py       冒烟与一致性测试
+
 运行演示（在仓库根目录执行）：
-    python -m harness.loop
+    python -m harness.loop          # v1 骨架：占位工具 + MockModel
+    python -m harness.run_agent     # S4：合成世界 + Bandit 干预工具 + Critic
+    python -m harness.tests         # 测试
 """
+
+# S4 版本：换口径（工具批量口径 / Critic 规则 / 六环节演示流程）必须升版本
+HARNESS_VERSION = "s4v0"
+
+__all__ = ["HARNESS_VERSION"]
