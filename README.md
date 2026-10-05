@@ -60,11 +60,16 @@ python L3_insights/model_activity.py
 python L3_insights/model_churn.py
 python L3_insights/model_migration.py
 python L3_insights/build_facts.py
+
+# 4) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
+python -m simulator.run_sim --no-fit --users 800     # 强制默认分布（公开仓路径）
+python -m simulator.tests                            # 确定性 / 校准 / 边界测试
 ```
 
 > L2 / L3 需要本地产出的原始数据（`data/raw/user_profile/`）。
 > **本仓库不包含任何真实用户数据**：原始采集与加工产出均不进公开仓（隐私 + 平台条款），
-> 只保留代码、聚合校准结果，以及（S1 后）模拟器产生的合成样例。
+> 只保留代码与聚合校准结果；S1 模拟器的合成数据也不随仓分发——任何人可用
+> `python -m simulator.run_sim --no-fit --seed <种子>` 离线重生成（逐字节可复现）。
 
 ## 4. 实测结果（2026-10-04 批次：pilot 200 人）
 
@@ -97,6 +102,7 @@ python L3_insights/build_facts.py
 ├── L2_features/                        # 特征层：feature_dict 单一真源 + 特征表 + 时间线
 ├── L3_insights/                        # 洞察层：活跃度 M1 / 迁移 M2 / 流失 M3 → facts 契约
 ├── harness/                            # 自研 Agent Harness 骨架（state/registry/planner/model/verifier/loop）
+├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── scripts/reddit_calibration.py      # Reddit 公开数据 → 模拟器参数校准（分布锚点，非主锚）
 ├── calibration/                       # 校准产出（聚合参数与报告；原始抓取不入库）
 └── data/                              # 本地数据域（不入库）：raw / processed
@@ -118,8 +124,8 @@ python L1_data_source/collectors/taptap/run_batch.py --daily-users 20 --target-t
 | 步 | 内容 | 状态 |
 |---|---|---|
 | v1 | 真实轨 L1–L3 + harness 契约层（本仓现状） | ✅ |
-| S1 | 用户模拟器：生成器 + 响应函数 + reward（treatment 集合待定） | 设计中 |
-| S2 | Uplift 干预效果建模（避免循环论证：标签来自模拟器） | 待做 |
+| S1 | 用户模拟器：合成人口 + 三臂效应（对照 / 个性化推荐 / 沉默召回）+ 配对奖励 + 真值 CATE | ✅ 本仓 [simulator/](./simulator/) |
+| S2 | Uplift 干预效果建模（标签来自模拟器真值，避免循环论证） | 待做 |
 | S3 | Bandit 策略学习 | 待做 |
 | S4 | 接入 harness：工具 + Critic；决策语义由作者定案 | 待做 |
 | S5 | 展示层 | 待做 |
