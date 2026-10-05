@@ -1,0 +1,24 @@
+# ---- 数据（真实数据不入公开仓：隐私 + 平台条款）----
+data/raw/
+data/processed/
+calibration/raw/
+
+# ---- 本地种子与密钥（含明文 user_id / 哈希盐 / X-UA）----
+seeds/
+.env
+.env.*
+*.salt
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ---- 工具与系统 ----
+mlruns/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

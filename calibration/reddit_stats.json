@@ -1,0 +1,1184 @@
+{
+ "generated_at": "2026-09-28T09:54:31Z",
+ "pilot": false,
+ "config": {
+  "days": [
+   "2023-02-20",
+   "2023-02-21",
+   "2023-02-22",
+   "2023-02-23",
+   "2023-02-24",
+   "2023-02-25",
+   "2023-02-26"
+  ],
+  "core_subs": [
+   "gaming",
+   "Genshin_Impact",
+   "truegaming"
+  ],
+  "retention_subs": [
+   "truegaming",
+   "patientgamers"
+  ],
+  "retention_weeks": 12,
+  "tenure_n": 50,
+  "fields": {
+   "comments": "id,author,created_utc,score,parent_id,link_id",
+   "posts": "id,author,created_utc,score,num_comments"
+  },
+  "source": "Arctic Shift API (Reddit archive)"
+ },
+ "subs": {
+  "gaming": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 29010,
+      "2023-02-21": 20480,
+      "2023-02-22": 25054,
+      "2023-02-23": 22068,
+      "2023-02-24": 24676,
+      "2023-02-25": 20265,
+      "2023-02-26": 30011
+     },
+     "raw": 171564,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 988,
+      "2023-02-21": 899,
+      "2023-02-22": 909,
+      "2023-02-23": 965,
+      "2023-02-24": 912,
+      "2023-02-25": 942,
+      "2023-02-26": 907
+     },
+     "raw": 6522,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 171564,
+     "human": 159965,
+     "deleted_share": 0.0664533351985265,
+     "filtered_share": 0.06760742346879299
+    },
+    "posts": {
+     "total": 6522,
+     "human": 4783,
+     "deleted_share": 0.26556271082490035,
+     "filtered_share": 0.2666360012266176
+    }
+   },
+   "comment_user_day": {
+    "n": 100846,
+    "total": 159965,
+    "p50": 1.0,
+    "p90": 3.0,
+    "p99": 9.0,
+    "max": 146,
+    "share_eq1": 0.7595145072685084,
+    "top1pct_share": 0.1001656612383959,
+    "top10pct_share": 0.33952427093426685,
+    "gini": 0.32156782333985356
+   },
+   "comment_user_week": {
+    "n": 76390,
+    "total": 159965,
+    "p50": 1.0,
+    "p90": 4.0,
+    "p99": 16.0,
+    "max": 190,
+    "share_eq1": 0.6716585940568137,
+    "top1pct_share": 0.14273122245491202,
+    "top10pct_share": 0.42142968774419404,
+    "gini": 0.44381066708584677
+   },
+   "post_user_day": {
+    "n": 4223,
+    "total": 4783,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 38,
+    "share_eq1": 0.9183045228510538,
+    "top1pct_share": 0.052059376960066905,
+    "top10pct_share": 0.20531047459753293,
+    "gini": 0.11068247323367662
+   },
+   "post_user_week": {
+    "n": 3790,
+    "total": 4783,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 5.0,
+    "max": 38,
+    "share_eq1": 0.8759894459102903,
+    "top1pct_share": 0.08613840685762074,
+    "top10pct_share": 0.2678235417102237,
+    "gini": 0.19324228233569093
+   },
+   "commenters": 76390,
+   "posters": 3790,
+   "commenter_poster_ratio": 20.155672823218996,
+   "dau_commenters_per_day": [
+    18135,
+    12171,
+    14779,
+    12601,
+    14022,
+    11589,
+    17549
+   ],
+   "dau_commenters_avg": 14406.57142857143,
+   "subscribers": 36408731.5,
+   "dau_over_subscribers": 0.00039569001267103824,
+   "comment_score": {
+    "n": 159965,
+    "mean": 10.840002500546994,
+    "p50": 1.0,
+    "p90": 9.0,
+    "share_le0": 0.09565842528053012,
+    "share_ge10": 0.09303285093614228,
+    "share_ge100": 0.014209358297127496
+   },
+   "post_score": {
+    "n": 4783,
+    "mean": 221.30566590006273,
+    "p50": 1.0,
+    "p90": 25.0,
+    "share_le0": 0.18377587288312774,
+    "share_ge10": 0.13547982437800543,
+    "share_ge100": 0.05874973865774619
+   },
+   "comments_per_post": {
+    "p50": 0.0,
+    "p90": 31.0,
+    "mean": 32.96445745348108,
+    "zero_share": 0.5525820614676981
+   },
+   "comment_volume_per_post": 33.44449090528957,
+   "top_level_comment_share": 0.5261525958803488,
+   "rhythm": {
+    "hours_utc": [
+     7423,
+     7584,
+     7717,
+     7414,
+     6462,
+     5613,
+     5097,
+     4909,
+     4330,
+     4172,
+     3817,
+     4238,
+     4977,
+     5835,
+     6765,
+     7309,
+     8261,
+     9343,
+     9471,
+     8486,
+     8068,
+     7761,
+     7610,
+     7303
+    ],
+    "peak_hour_utc": 18,
+    "peak_over_mean": 1.4209608351826963,
+    "weekday_counts": [
+     27161,
+     18976,
+     23397,
+     20514,
+     22977,
+     18777,
+     28163
+    ],
+    "weekend_over_weekday": 1.0382658703826586
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 29010,
+     "2023-02-21": 20480,
+     "2023-02-22": 25054,
+     "2023-02-23": 22068,
+     "2023-02-24": 24676,
+     "2023-02-25": 20265,
+     "2023-02-26": 30011
+    },
+    "posts": {
+     "2023-02-20": 988,
+     "2023-02-21": 899,
+     "2023-02-22": 909,
+     "2023-02-23": 965,
+     "2023-02-24": 912,
+     "2023-02-25": 942,
+     "2023-02-26": 907
+    }
+   }
+  },
+  "Genshin_Impact": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 12871,
+      "2023-02-21": 10816,
+      "2023-02-22": 10674,
+      "2023-02-23": 14049,
+      "2023-02-24": 12018,
+      "2023-02-25": 9470,
+      "2023-02-26": 9569
+     },
+     "raw": 79467,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 453,
+      "2023-02-21": 362,
+      "2023-02-22": 424,
+      "2023-02-23": 414,
+      "2023-02-24": 555,
+      "2023-02-25": 472,
+      "2023-02-26": 415
+     },
+     "raw": 3095,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 79467,
+     "human": 75010,
+     "deleted_share": 0.0374872588621692,
+     "filtered_share": 0.05608617413517561
+    },
+    "posts": {
+     "total": 3095,
+     "human": 2369,
+     "deleted_share": 0.23424878836833601,
+     "filtered_share": 0.2345718901453958
+    }
+   },
+   "comment_user_day": {
+    "n": 33437,
+    "total": 75010,
+    "p50": 1.0,
+    "p90": 4.0,
+    "p99": 16.0,
+    "max": 88,
+    "share_eq1": 0.6203307713012531,
+    "top1pct_share": 0.11674443407545661,
+    "top10pct_share": 0.40993200906545796,
+    "gini": 0.4523279923793754
+   },
+   "comment_user_week": {
+    "n": 18727,
+    "total": 75010,
+    "p50": 1.0,
+    "p90": 8.0,
+    "p99": 40.0,
+    "max": 311,
+    "share_eq1": 0.5051529876648689,
+    "top1pct_share": 0.18870817224370084,
+    "top10pct_share": 0.5365417944274097,
+    "gini": 0.6129590909033635
+   },
+   "post_user_day": {
+    "n": 2201,
+    "total": 2369,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 4,
+    "share_eq1": 0.9363925488414357,
+    "top1pct_share": 0.0299704516673702,
+    "top10pct_share": 0.1637821865766146,
+    "gini": 0.06705076110881718
+   },
+   "post_user_week": {
+    "n": 2001,
+    "total": 2369,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 4.0,
+    "max": 19,
+    "share_eq1": 0.8825587206396801,
+    "top1pct_share": 0.049810046433094134,
+    "top10pct_share": 0.2249894470240608,
+    "gini": 0.14249861139502001
+   },
+   "commenters": 18727,
+   "posters": 2001,
+   "commenter_poster_ratio": 9.358820589705147,
+   "dau_commenters_per_day": [
+    5267,
+    4693,
+    4332,
+    5894,
+    4984,
+    4141,
+    4126
+   ],
+   "dau_commenters_avg": 4776.714285714285,
+   "subscribers": 1814316.0,
+   "dau_over_subscribers": 0.0026327906967222275,
+   "comment_score": {
+    "n": 75010,
+    "mean": 13.866404479402746,
+    "p50": 2.0,
+    "p90": 22.0,
+    "share_le0": 0.09998666844420744,
+    "share_ge10": 0.1743367550993201,
+    "share_ge100": 0.026249833355552595
+   },
+   "post_score": {
+    "n": 2369,
+    "mean": 288.75728155339806,
+    "p50": 1.0,
+    "p90": 503.0,
+    "share_le0": 0.20599409033347404,
+    "share_ge10": 0.36175601519628536,
+    "share_ge100": 0.19628535246939638
+   },
+   "comments_per_post": {
+    "p50": 3.0,
+    "p90": 55.0,
+    "mean": 30.4596876319122,
+    "zero_share": 0.06796116504854369
+   },
+   "comment_volume_per_post": 31.663149008020262,
+   "top_level_comment_share": 0.43347553659512067,
+   "rhythm": {
+    "hours_utc": [
+     3332,
+     2894,
+     2920,
+     2824,
+     2855,
+     2810,
+     2485,
+     2771,
+     3114,
+     2806,
+     2792,
+     2924,
+     3218,
+     3415,
+     3506,
+     3371,
+     3573,
+     3603,
+     3612,
+     3479,
+     2981,
+     3084,
+     3370,
+     3271
+    ],
+    "peak_hour_utc": 18,
+    "peak_over_mean": 1.1556859085455273,
+    "weekday_counts": [
+     12085,
+     10272,
+     10089,
+     13393,
+     11261,
+     8937,
+     8973
+    ],
+    "weekend_over_weekday": 0.7841506129597198
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 12871,
+     "2023-02-21": 10816,
+     "2023-02-22": 10674,
+     "2023-02-23": 14049,
+     "2023-02-24": 12018,
+     "2023-02-25": 9470,
+     "2023-02-26": 9569
+    },
+    "posts": {
+     "2023-02-20": 453,
+     "2023-02-21": 362,
+     "2023-02-22": 424,
+     "2023-02-23": 414,
+     "2023-02-24": 555,
+     "2023-02-25": 472,
+     "2023-02-26": 415
+    }
+   }
+  },
+  "truegaming": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 222,
+      "2023-02-21": 645,
+      "2023-02-22": 492,
+      "2023-02-23": 333,
+      "2023-02-24": 346,
+      "2023-02-25": 222,
+      "2023-02-26": 187
+     },
+     "raw": 2447,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 15,
+      "2023-02-21": 12,
+      "2023-02-22": 21,
+      "2023-02-23": 9,
+      "2023-02-24": 15,
+      "2023-02-25": 8,
+      "2023-02-26": 11
+     },
+     "raw": 91,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 2447,
+     "human": 2058,
+     "deleted_share": 0.12545974662852472,
+     "filtered_share": 0.1589701675521046
+    },
+    "posts": {
+     "total": 91,
+     "human": 75,
+     "deleted_share": 0.15384615384615385,
+     "filtered_share": 0.17582417582417584
+    }
+   },
+   "comment_user_day": {
+    "n": 1342,
+    "total": 2058,
+    "p50": 1.0,
+    "p90": 3.0,
+    "p99": 8.0,
+    "max": 20,
+    "share_eq1": 0.7511177347242921,
+    "top1pct_share": 0.0728862973760933,
+    "top10pct_share": 0.3085519922254616,
+    "gini": 0.2957923642098952
+   },
+   "comment_user_week": {
+    "n": 1096,
+    "total": 2058,
+    "p50": 1.0,
+    "p90": 4.0,
+    "p99": 11.049999999999955,
+    "max": 25,
+    "share_eq1": 0.676094890510949,
+    "top1pct_share": 0.08357628765792031,
+    "top10pct_share": 0.36588921282798836,
+    "gini": 0.3867114624786307
+   },
+   "post_user_day": {
+    "n": 72,
+    "total": 75,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 2.2900000000000063,
+    "max": 3,
+    "share_eq1": 0.9722222222222222,
+    "top1pct_share": 0.04,
+    "top10pct_share": 0.13333333333333333,
+    "gini": 0.03907407407407407
+   },
+   "post_user_week": {
+    "n": 72,
+    "total": 75,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 2.2900000000000063,
+    "max": 3,
+    "share_eq1": 0.9722222222222222,
+    "top1pct_share": 0.04,
+    "top10pct_share": 0.13333333333333333,
+    "gini": 0.03907407407407407
+   },
+   "commenters": 1096,
+   "posters": 72,
+   "commenter_poster_ratio": 15.222222222222221,
+   "dau_commenters_per_day": [
+    119,
+    354,
+    281,
+    181,
+    161,
+    143,
+    103
+   ],
+   "dau_commenters_avg": 191.71428571428572,
+   "subscribers": 1395033.5,
+   "dau_over_subscribers": 0.00013742629529275513,
+   "comment_score": {
+    "n": 2058,
+    "mean": 6.805150631681244,
+    "p50": 2.0,
+    "p90": 14.0,
+    "share_le0": 0.07628765792031098,
+    "share_ge10": 0.15257531584062195,
+    "share_ge100": 0.006802721088435374
+   },
+   "post_score": {
+    "n": 75,
+    "mean": 32.96,
+    "p50": 1.0,
+    "p90": 54.200000000000145,
+    "share_le0": 0.32,
+    "share_ge10": 0.25333333333333335,
+    "share_ge100": 0.09333333333333334
+   },
+   "comments_per_post": {
+    "p50": 3.0,
+    "p90": 80.40000000000033,
+    "mean": 30.72,
+    "zero_share": 0.09333333333333334
+   },
+   "comment_volume_per_post": 27.44,
+   "top_level_comment_share": 0.3901846452866861,
+   "rhythm": {
+    "hours_utc": [
+     86,
+     107,
+     101,
+     91,
+     73,
+     52,
+     52,
+     48,
+     48,
+     90,
+     84,
+     49,
+     73,
+     76,
+     85,
+     175,
+     75,
+     98,
+     140,
+     81,
+     73,
+     97,
+     93,
+     111
+    ],
+    "peak_hour_utc": 15,
+    "peak_over_mean": 2.0408163265306123,
+    "weekday_counts": [
+     166,
+     528,
+     434,
+     298,
+     294,
+     189,
+     149
+    ],
+    "weekend_over_weekday": 0.49127906976744184
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 222,
+     "2023-02-21": 645,
+     "2023-02-22": 492,
+     "2023-02-23": 333,
+     "2023-02-24": 346,
+     "2023-02-25": 222,
+     "2023-02-26": 187
+    },
+    "posts": {
+     "2023-02-20": 15,
+     "2023-02-21": 12,
+     "2023-02-22": 21,
+     "2023-02-23": 9,
+     "2023-02-24": 15,
+     "2023-02-25": 8,
+     "2023-02-26": 11
+    }
+   }
+  }
+ },
+ "coverage": {
+  "note": "series 为 time_series 日桶合计（桶标签有 −1h 偏移）；collected 为 jsonl 行数（含日界重复行）；容差 ±10%",
+  "comments": {
+   "gaming": {
+    "collected": 171564,
+    "series_sum": 171580.0,
+    "ratio": 0.9999067490383494,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 29014.0
+     },
+     {
+      "label": 1676937600,
+      "value": 20482.0
+     },
+     {
+      "label": 1677024000,
+      "value": 25058.0
+     },
+     {
+      "label": 1677110400,
+      "value": 22068.0
+     },
+     {
+      "label": 1677196800,
+      "value": 24681.0
+     },
+     {
+      "label": 1677283200,
+      "value": 20265.0
+     },
+     {
+      "label": 1677369600,
+      "value": 30012.0
+     }
+    ]
+   },
+   "Genshin_Impact": {
+    "collected": 79467,
+    "series_sum": 79470.0,
+    "ratio": 0.9999622499056248,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 12871.0
+     },
+     {
+      "label": 1676937600,
+      "value": 10818.0
+     },
+     {
+      "label": 1677024000,
+      "value": 10675.0
+     },
+     {
+      "label": 1677110400,
+      "value": 14049.0
+     },
+     {
+      "label": 1677196800,
+      "value": 12018.0
+     },
+     {
+      "label": 1677283200,
+      "value": 9470.0
+     },
+     {
+      "label": 1677369600,
+      "value": 9569.0
+     }
+    ]
+   },
+   "truegaming": {
+    "collected": 2447,
+    "series_sum": 2448.0,
+    "ratio": 0.9995915032679739,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 222.0
+     },
+     {
+      "label": 1676937600,
+      "value": 646.0
+     },
+     {
+      "label": 1677024000,
+      "value": 492.0
+     },
+     {
+      "label": 1677110400,
+      "value": 333.0
+     },
+     {
+      "label": 1677196800,
+      "value": 346.0
+     },
+     {
+      "label": 1677283200,
+      "value": 222.0
+     },
+     {
+      "label": 1677369600,
+      "value": 187.0
+     }
+    ]
+   }
+  },
+  "posts": {
+   "gaming": {
+    "collected": 6522,
+    "series_sum": 6522.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 988.0
+     },
+     {
+      "label": 1676937600,
+      "value": 899.0
+     },
+     {
+      "label": 1677024000,
+      "value": 909.0
+     },
+     {
+      "label": 1677110400,
+      "value": 965.0
+     },
+     {
+      "label": 1677196800,
+      "value": 912.0
+     },
+     {
+      "label": 1677283200,
+      "value": 942.0
+     },
+     {
+      "label": 1677369600,
+      "value": 907.0
+     }
+    ]
+   },
+   "Genshin_Impact": {
+    "collected": 3095,
+    "series_sum": 3095.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 453.0
+     },
+     {
+      "label": 1676937600,
+      "value": 362.0
+     },
+     {
+      "label": 1677024000,
+      "value": 424.0
+     },
+     {
+      "label": 1677110400,
+      "value": 414.0
+     },
+     {
+      "label": 1677196800,
+      "value": 555.0
+     },
+     {
+      "label": 1677283200,
+      "value": 472.0
+     },
+     {
+      "label": 1677369600,
+      "value": 415.0
+     }
+    ]
+   },
+   "truegaming": {
+    "collected": 91,
+    "series_sum": 91.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 15.0
+     },
+     {
+      "label": 1676937600,
+      "value": 12.0
+     },
+     {
+      "label": 1677024000,
+      "value": 21.0
+     },
+     {
+      "label": 1677110400,
+      "value": 9.0
+     },
+     {
+      "label": 1677196800,
+      "value": 15.0
+     },
+     {
+      "label": 1677283200,
+      "value": 8.0
+     },
+     {
+      "label": 1677369600,
+      "value": 11.0
+     }
+    ]
+   }
+  }
+ },
+ "retention": {
+  "truegaming": {
+   "transitions": [
+    {
+     "w0": "2023-01-02",
+     "cohort": 845,
+     "retained": 248,
+     "rate": 0.293491124260355
+    },
+    {
+     "w0": "2023-01-09",
+     "cohort": 1251,
+     "retained": 223,
+     "rate": 0.1782573940847322
+    },
+    {
+     "w0": "2023-01-16",
+     "cohort": 888,
+     "retained": 214,
+     "rate": 0.240990990990991
+    },
+    {
+     "w0": "2023-01-23",
+     "cohort": 979,
+     "retained": 158,
+     "rate": 0.16138917262512767
+    },
+    {
+     "w0": "2023-01-30",
+     "cohort": 624,
+     "retained": 174,
+     "rate": 0.27884615384615385
+    },
+    {
+     "w0": "2023-02-06",
+     "cohort": 1104,
+     "retained": 285,
+     "rate": 0.25815217391304346
+    },
+    {
+     "w0": "2023-02-13",
+     "cohort": 1284,
+     "retained": 281,
+     "rate": 0.21884735202492211
+    },
+    {
+     "w0": "2023-02-20",
+     "cohort": 1096,
+     "retained": 216,
+     "rate": 0.19708029197080293
+    },
+    {
+     "w0": "2023-02-27",
+     "cohort": 991,
+     "retained": 212,
+     "rate": 0.21392532795156408
+    },
+    {
+     "w0": "2023-03-06",
+     "cohort": 976,
+     "retained": 160,
+     "rate": 0.16393442622950818
+    },
+    {
+     "w0": "2023-03-13",
+     "cohort": 638,
+     "retained": 114,
+     "rate": 0.1786833855799373
+    }
+   ],
+   "cohort_total": 10676,
+   "retained_total": 2285,
+   "overall_rate": 0.2140314724615961,
+   "by_intensity": {
+    "1条": {
+     "cohort": 6909,
+     "retained": 970,
+     "rate": 0.14039658416558112
+    },
+    "2-4条": {
+     "cohort": 2907,
+     "retained": 847,
+     "rate": 0.2913656690746474
+    },
+    "5+条": {
+     "cohort": 860,
+     "retained": 468,
+     "rate": 0.5441860465116279
+    }
+   },
+   "errors": []
+  },
+  "patientgamers": {
+   "transitions": [
+    {
+     "w0": "2023-01-02",
+     "cohort": 4614,
+     "retained": 1413,
+     "rate": 0.30624187256176855
+    },
+    {
+     "w0": "2023-01-09",
+     "cohort": 5359,
+     "retained": 1400,
+     "rate": 0.26124276917335326
+    },
+    {
+     "w0": "2023-01-16",
+     "cohort": 4495,
+     "retained": 1378,
+     "rate": 0.3065628476084538
+    },
+    {
+     "w0": "2023-01-23",
+     "cohort": 5356,
+     "retained": 1365,
+     "rate": 0.25485436893203883
+    },
+    {
+     "w0": "2023-01-30",
+     "cohort": 4029,
+     "retained": 1205,
+     "rate": 0.29908165797964753
+    },
+    {
+     "w0": "2023-02-06",
+     "cohort": 5138,
+     "retained": 1213,
+     "rate": 0.2360840794083301
+    },
+    {
+     "w0": "2023-02-13",
+     "cohort": 4055,
+     "retained": 1134,
+     "rate": 0.27965474722564737
+    },
+    {
+     "w0": "2023-02-20",
+     "cohort": 4225,
+     "retained": 1006,
+     "rate": 0.23810650887573964
+    },
+    {
+     "w0": "2023-02-27",
+     "cohort": 3430,
+     "retained": 1019,
+     "rate": 0.29708454810495627
+    },
+    {
+     "w0": "2023-03-06",
+     "cohort": 4739,
+     "retained": 1282,
+     "rate": 0.27052120700569743
+    },
+    {
+     "w0": "2023-03-13",
+     "cohort": 4672,
+     "retained": 1370,
+     "rate": 0.293236301369863
+    }
+   ],
+   "cohort_total": 50112,
+   "retained_total": 13785,
+   "overall_rate": 0.2750838122605364,
+   "by_intensity": {
+    "1条": {
+     "cohort": 31677,
+     "retained": 5847,
+     "rate": 0.18458187328345488
+    },
+    "2-4条": {
+     "cohort": 14066,
+     "retained": 5085,
+     "rate": 0.3615100241717617
+    },
+    "5+条": {
+     "cohort": 4369,
+     "retained": 2853,
+     "rate": 0.6530098420691234
+    }
+   },
+   "errors": []
+  }
+ },
+ "tenure": {
+  "n_target": 50,
+  "n_files": 50,
+  "n_ok": 50,
+  "strata": {
+   "1条": 33,
+   "2-4条": 13,
+   "5+条": 4
+  },
+  "delay_days": {
+   "n": 50,
+   "p50": 1405.591273148148,
+   "p90": 3834.751002314815,
+   "p99": 5130.761923842591,
+   "share_le7d": 0.04,
+   "share_le30d": 0.04
+  },
+  "lifetime_comments": {
+   "p50": 2073.5,
+   "p90": 7621.900000000002,
+   "p99": 11194.02
+  },
+  "lifetime_posts": {
+   "p50": 40.0,
+   "p90": 224.99999999999994
+  },
+  "samples": [
+   {
+    "author": "A_Drottam",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 1343.5,
+    "lifetime_comments": 228,
+    "lifetime_posts": 35,
+    "earliest_activity": 1561339397
+   },
+   {
+    "author": "AnubissDarkling",
+    "stratum": "2-4条",
+    "week_comments": 2,
+    "delay_days": 469.0,
+    "lifetime_comments": 5683,
+    "lifetime_posts": 165,
+    "earliest_activity": 1636339832
+   },
+   {
+    "author": "Arviay",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2706.9,
+    "lifetime_comments": 5435,
+    "lifetime_posts": 272,
+    "earliest_activity": 1443303703
+   },
+   {
+    "author": "BlueLightning91",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 1825.8,
+    "lifetime_comments": 2144,
+    "lifetime_posts": 70,
+    "earliest_activity": 1519336887
+   },
+   {
+    "author": "Chill_Edoeard",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 163.3,
+    "lifetime_comments": 7482,
+    "lifetime_posts": 101,
+    "earliest_activity": 1663271150
+   },
+   {
+    "author": "CocoajoeGaming",
+    "stratum": "5+条",
+    "week_comments": 9,
+    "delay_days": 1539.7,
+    "lifetime_comments": 2003,
+    "lifetime_posts": 61,
+    "earliest_activity": 1543979549
+   },
+   {
+    "author": "Comprehensive-Ebb930",
+    "stratum": "2-4条",
+    "week_comments": 3,
+    "delay_days": 32.2,
+    "lifetime_comments": 86,
+    "lifetime_posts": 6,
+    "earliest_activity": 1674120566
+   },
+   {
+    "author": "DankDoom4Life",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 1365.9,
+    "lifetime_comments": 912,
+    "lifetime_posts": 4,
+    "earliest_activity": 1559116077
+   },
+   {
+    "author": "Drstring",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2521.7,
+    "lifetime_comments": 66,
+    "lifetime_posts": null,
+    "earliest_activity": 1459474973
+   },
+   {
+    "author": "Fackous93",
+    "stratum": "2-4条",
+    "week_comments": 2,
+    "delay_days": 1139.4,
+    "lifetime_comments": 1175,
+    "lifetime_posts": 5,
+    "earliest_activity": 1578599672
+   },
+   {
+    "author": "FelwintersCake",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2341.7,
+    "lifetime_comments": 4106,
+    "lifetime_posts": 50,
+    "earliest_activity": 1475021959
+   },
+   {
+    "author": "GodOfUrging",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 924.7,
+    "lifetime_comments": 10403,
+    "lifetime_posts": 18,
+    "earliest_activity": 1597539675
+   },
+   {
+    "author": "Hyoruturu",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2174.6,
+    "lifetime_comments": 728,
+    "lifetime_posts": 6,
+    "earliest_activity": 1489065244
+   },
+   {
+    "author": "ImmaJellal",
+    "stratum": "2-4条",
+    "week_comments": 2,
+    "delay_days": 2728.1,
+    "lifetime_comments": 882,
+    "lifetime_posts": 50,
+    "earliest_activity": 1441216497
+   },
+   {
+    "author": "Jermzxxx",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 3383.1,
+    "lifetime_comments": 3465,
+    "lifetime_posts": 243,
+    "earliest_activity": 1384873714
+   }
+  ],
+  "errors": []
+ }
+}

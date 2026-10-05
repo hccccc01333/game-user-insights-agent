@@ -1,0 +1,773 @@
+{
+ "generated_at": "2026-09-28T08:43:27Z",
+ "pilot": true,
+ "config": {
+  "days": [
+   "2023-02-20"
+  ],
+  "core_subs": [
+   "gaming",
+   "Genshin_Impact",
+   "truegaming"
+  ],
+  "retention_subs": [
+   "truegaming",
+   "patientgamers"
+  ],
+  "retention_weeks": 3,
+  "tenure_n": 8,
+  "fields": {
+   "comments": "id,author,created_utc,score,parent_id,link_id",
+   "posts": "id,author,created_utc,score,num_comments"
+  },
+  "source": "Arctic Shift API (Reddit archive)"
+ },
+ "subs": {
+  "gaming": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 29010
+     },
+     "raw": 29010,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 988
+     },
+     "raw": 988,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 29010,
+     "human": 27161,
+     "deleted_share": 0.06263357462943812,
+     "filtered_share": 0.06373664253705619
+    },
+    "posts": {
+     "total": 988,
+     "human": 724,
+     "deleted_share": 0.26619433198380565,
+     "filtered_share": 0.26720647773279355
+    }
+   },
+   "comment_user_day": {
+    "n": 18135,
+    "total": 27161,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 8.0,
+    "max": 111,
+    "share_eq1": 0.7775020678246485,
+    "top1pct_share": 0.0930009940723832,
+    "top10pct_share": 0.3172563602223777,
+    "gini": 0.2907960229836592
+   },
+   "comment_user_week": {
+    "n": 18135,
+    "total": 27161,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 8.0,
+    "max": 111,
+    "share_eq1": 0.7775020678246485,
+    "top1pct_share": 0.0930009940723832,
+    "top10pct_share": 0.3172563602223777,
+    "gini": 0.2907960229836592
+   },
+   "post_user_day": {
+    "n": 637,
+    "total": 724,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 17,
+    "share_eq1": 0.9136577708006279,
+    "top1pct_share": 0.05110497237569061,
+    "top10pct_share": 0.20718232044198895,
+    "gini": 0.11316426273016648
+   },
+   "post_user_week": {
+    "n": 637,
+    "total": 724,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 17,
+    "share_eq1": 0.9136577708006279,
+    "top1pct_share": 0.05110497237569061,
+    "top10pct_share": 0.20718232044198895,
+    "gini": 0.11316426273016648
+   },
+   "commenters": 18135,
+   "posters": 637,
+   "commenter_poster_ratio": 28.46938775510204,
+   "dau_commenters_per_day": [
+    18135
+   ],
+   "dau_commenters_avg": 18135.0,
+   "subscribers": 36408731.5,
+   "dau_over_subscribers": 0.0004980948045388508,
+   "comment_score": {
+    "n": 27161,
+    "mean": 8.679577335149663,
+    "p50": 1.0,
+    "p90": 6.0,
+    "share_le0": 0.0711314016420603,
+    "share_ge10": 0.06476197489046795,
+    "share_ge100": 0.009609366370899451
+   },
+   "post_score": {
+    "n": 724,
+    "mean": 160.62154696132598,
+    "p50": 1.0,
+    "p90": 22.700000000000045,
+    "share_le0": 0.15469613259668508,
+    "share_ge10": 0.1298342541436464,
+    "share_ge100": 0.05110497237569061
+   },
+   "comments_per_post": {
+    "p50": 0.0,
+    "p90": 27.700000000000045,
+    "mean": 31.37154696132597,
+    "zero_share": 0.5759668508287292
+   },
+   "comment_volume_per_post": 37.51519337016575,
+   "top_level_comment_share": 0.571996612790398,
+   "rhythm": {
+    "hours_utc": [
+     1255,
+     1170,
+     1216,
+     1074,
+     1034,
+     904,
+     871,
+     816,
+     711,
+     751,
+     644,
+     651,
+     724,
+     784,
+     1036,
+     1211,
+     1412,
+     1970,
+     2651,
+     1690,
+     1492,
+     1068,
+     1042,
+     984
+    ],
+    "peak_hour_utc": 18,
+    "peak_over_mean": 2.3424763447590298,
+    "weekday_counts": [
+     27161,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "weekend_over_weekday": null
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 29010
+    },
+    "posts": {
+     "2023-02-20": 988
+    }
+   }
+  },
+  "Genshin_Impact": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 12871
+     },
+     "raw": 12871,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 453
+     },
+     "raw": 453,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 12871,
+     "human": 12085,
+     "deleted_share": 0.04521793178463212,
+     "filtered_share": 0.06106751612151348
+    },
+    "posts": {
+     "total": 453,
+     "human": 347,
+     "deleted_share": 0.23399558498896247,
+     "filtered_share": 0.23399558498896247
+    }
+   },
+   "comment_user_day": {
+    "n": 5267,
+    "total": 12085,
+    "p50": 1.0,
+    "p90": 5.0,
+    "p99": 16.0,
+    "max": 62,
+    "share_eq1": 0.6162901082209987,
+    "top1pct_share": 0.1160943318163012,
+    "top10pct_share": 0.4158874637980968,
+    "gini": 0.4597870960074198
+   },
+   "comment_user_week": {
+    "n": 5267,
+    "total": 12085,
+    "p50": 1.0,
+    "p90": 5.0,
+    "p99": 16.0,
+    "max": 62,
+    "share_eq1": 0.6162901082209987,
+    "top1pct_share": 0.1160943318163012,
+    "top10pct_share": 0.4158874637980968,
+    "gini": 0.4597870960074198
+   },
+   "post_user_day": {
+    "n": 319,
+    "total": 347,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 4,
+    "share_eq1": 0.9373040752351097,
+    "top1pct_share": 0.02881844380403458,
+    "top10pct_share": 0.17002881844380405,
+    "gini": 0.07662634493599409
+   },
+   "post_user_week": {
+    "n": 319,
+    "total": 347,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 3.0,
+    "max": 4,
+    "share_eq1": 0.9373040752351097,
+    "top1pct_share": 0.02881844380403458,
+    "top10pct_share": 0.17002881844380405,
+    "gini": 0.07662634493599409
+   },
+   "commenters": 5267,
+   "posters": 319,
+   "commenter_poster_ratio": 16.510971786833856,
+   "dau_commenters_per_day": [
+    5267
+   ],
+   "dau_commenters_avg": 5267.0,
+   "subscribers": 1814316.0,
+   "dau_over_subscribers": 0.0029030224062401478,
+   "comment_score": {
+    "n": 12085,
+    "mean": 12.664377327265205,
+    "p50": 2.0,
+    "p90": 20.0,
+    "share_le0": 0.11601158460901945,
+    "share_ge10": 0.1694662805130327,
+    "share_ge100": 0.0215142738932561
+   },
+   "post_score": {
+    "n": 347,
+    "mean": 266.79250720461096,
+    "p50": 1.0,
+    "p90": 369.0000000000005,
+    "share_le0": 0.2219020172910663,
+    "share_ge10": 0.37752161383285304,
+    "share_ge100": 0.19596541786743515
+   },
+   "comments_per_post": {
+    "p50": 4.0,
+    "p90": 61.400000000000034,
+    "mean": 36.42651296829971,
+    "zero_share": 0.08357348703170028
+   },
+   "comment_volume_per_post": 34.82708933717579,
+   "top_level_comment_share": 0.4412081092263136,
+   "rhythm": {
+    "hours_utc": [
+     458,
+     415,
+     408,
+     429,
+     497,
+     564,
+     446,
+     426,
+     463,
+     442,
+     436,
+     387,
+     409,
+     442,
+     457,
+     423,
+     430,
+     506,
+     599,
+     742,
+     638,
+     586,
+     697,
+     785
+    ],
+    "peak_hour_utc": 23,
+    "peak_over_mean": 1.5589573851882499,
+    "weekday_counts": [
+     12085,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "weekend_over_weekday": null
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 12871
+    },
+    "posts": {
+     "2023-02-20": 453
+    }
+   }
+  },
+  "truegaming": {
+   "rows": {
+    "comments": {
+     "tasks": {
+      "2023-02-20": 222
+     },
+     "raw": 222,
+     "dupes": 0
+    },
+    "posts": {
+     "tasks": {
+      "2023-02-20": 15
+     },
+     "raw": 15,
+     "dupes": 0
+    }
+   },
+   "hygiene": {
+    "comments": {
+     "total": 222,
+     "human": 166,
+     "deleted_share": 0.19369369369369369,
+     "filtered_share": 0.25225225225225223
+    },
+    "posts": {
+     "total": 15,
+     "human": 14,
+     "deleted_share": 0.06666666666666667,
+     "filtered_share": 0.06666666666666667
+    }
+   },
+   "comment_user_day": {
+    "n": 119,
+    "total": 166,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 5.639999999999986,
+    "max": 11,
+    "share_eq1": 0.7647058823529411,
+    "top1pct_share": 0.06626506024096386,
+    "top10pct_share": 0.2469879518072289,
+    "gini": 0.24015389288245412
+   },
+   "comment_user_week": {
+    "n": 119,
+    "total": 166,
+    "p50": 1.0,
+    "p90": 2.0,
+    "p99": 5.639999999999986,
+    "max": 11,
+    "share_eq1": 0.7647058823529411,
+    "top1pct_share": 0.06626506024096386,
+    "top10pct_share": 0.2469879518072289,
+    "gini": 0.24015389288245412
+   },
+   "post_user_day": {
+    "n": 12,
+    "total": 14,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 2.780000000000001,
+    "max": 3,
+    "share_eq1": 0.9166666666666666,
+    "top1pct_share": 0.21428571428571427,
+    "top10pct_share": 0.21428571428571427,
+    "gini": 0.13095238095238093
+   },
+   "post_user_week": {
+    "n": 12,
+    "total": 14,
+    "p50": 1.0,
+    "p90": 1.0,
+    "p99": 2.780000000000001,
+    "max": 3,
+    "share_eq1": 0.9166666666666666,
+    "top1pct_share": 0.21428571428571427,
+    "top10pct_share": 0.21428571428571427,
+    "gini": 0.13095238095238093
+   },
+   "commenters": 119,
+   "posters": 12,
+   "commenter_poster_ratio": 9.916666666666666,
+   "dau_commenters_per_day": [
+    119
+   ],
+   "dau_commenters_avg": 119.0,
+   "subscribers": 1395033.5,
+   "dau_over_subscribers": 8.530261101256708e-05,
+   "comment_score": {
+    "n": 166,
+    "mean": 3.933734939759036,
+    "p50": 2.0,
+    "p90": 8.5,
+    "share_le0": 0.04216867469879518,
+    "share_ge10": 0.0963855421686747,
+    "share_ge100": 0.0
+   },
+   "post_score": {
+    "n": 14,
+    "mean": 3.7857142857142856,
+    "p50": 1.0,
+    "p90": 16.400000000000023,
+    "share_le0": 0.35714285714285715,
+    "share_ge10": 0.14285714285714285,
+    "share_ge100": 0.0
+   },
+   "comments_per_post": {
+    "p50": 1.0,
+    "p90": 21.00000000000002,
+    "mean": 5.785714285714286,
+    "zero_share": 0.21428571428571427
+   },
+   "comment_volume_per_post": 11.857142857142858,
+   "top_level_comment_share": 0.4036144578313253,
+   "rhythm": {
+    "hours_utc": [
+     4,
+     6,
+     4,
+     4,
+     2,
+     3,
+     2,
+     2,
+     3,
+     4,
+     4,
+     5,
+     11,
+     16,
+     14,
+     28,
+     3,
+     6,
+     6,
+     6,
+     3,
+     6,
+     15,
+     9
+    ],
+    "peak_hour_utc": 15,
+    "peak_over_mean": 4.048192771084337,
+    "weekday_counts": [
+     166,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "weekend_over_weekday": null
+   },
+   "daily_counts": {
+    "comments": {
+     "2023-02-20": 222
+    },
+    "posts": {
+     "2023-02-20": 15
+    }
+   }
+  }
+ },
+ "coverage": {
+  "note": "series 为 time_series 日桶合计（桶标签有 −1h 偏移）；collected 为 jsonl 行数（含日界重复行）；容差 ±10%",
+  "comments": {
+   "gaming": {
+    "collected": 29010,
+    "series_sum": 29014.0,
+    "ratio": 0.9998621355207831,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 29014.0
+     }
+    ]
+   },
+   "Genshin_Impact": {
+    "collected": 12871,
+    "series_sum": 12871.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 12871.0
+     }
+    ]
+   },
+   "truegaming": {
+    "collected": 222,
+    "series_sum": 222.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 222.0
+     }
+    ]
+   }
+  },
+  "posts": {
+   "gaming": {
+    "collected": 988,
+    "series_sum": 988.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 988.0
+     }
+    ]
+   },
+   "Genshin_Impact": {
+    "collected": 453,
+    "series_sum": 453.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 453.0
+     }
+    ]
+   },
+   "truegaming": {
+    "collected": 15,
+    "series_sum": 15.0,
+    "ratio": 1.0,
+    "pass": true,
+    "series": [
+     {
+      "label": 1676851200,
+      "value": 15.0
+     }
+    ]
+   }
+  }
+ },
+ "retention": {
+  "truegaming": {
+   "transitions": [
+    {
+     "w0": "2023-01-02",
+     "cohort": 845,
+     "retained": 248,
+     "rate": 0.293491124260355
+    },
+    {
+     "w0": "2023-01-09",
+     "cohort": 1251,
+     "retained": 223,
+     "rate": 0.1782573940847322
+    }
+   ],
+   "cohort_total": 2096,
+   "retained_total": 471,
+   "overall_rate": 0.22471374045801526,
+   "by_intensity": {
+    "1条": {
+     "cohort": 1315,
+     "retained": 189,
+     "rate": 0.14372623574144486
+    },
+    "2-4条": {
+     "cohort": 603,
+     "retained": 186,
+     "rate": 0.30845771144278605
+    },
+    "5+条": {
+     "cohort": 178,
+     "retained": 96,
+     "rate": 0.5393258426966292
+    }
+   },
+   "errors": []
+  },
+  "patientgamers": {
+   "transitions": [
+    {
+     "w0": "2023-01-02",
+     "cohort": 4614,
+     "retained": 1413,
+     "rate": 0.30624187256176855
+    },
+    {
+     "w0": "2023-01-09",
+     "cohort": 5359,
+     "retained": 1400,
+     "rate": 0.26124276917335326
+    }
+   ],
+   "cohort_total": 9973,
+   "retained_total": 2813,
+   "overall_rate": 0.2820615662288178,
+   "by_intensity": {
+    "1条": {
+     "cohort": 6248,
+     "retained": 1179,
+     "rate": 0.18870038412291934
+    },
+    "2-4条": {
+     "cohort": 2854,
+     "retained": 1065,
+     "rate": 0.3731604765241766
+    },
+    "5+条": {
+     "cohort": 871,
+     "retained": 569,
+     "rate": 0.653272101033295
+    }
+   },
+   "errors": []
+  }
+ },
+ "tenure": {
+  "n_target": 8,
+  "n_files": 8,
+  "n_ok": 8,
+  "strata": {
+   "1条": 5,
+   "2-4条": 2,
+   "5+条": 1
+  },
+  "delay_days": {
+   "n": 8,
+   "p50": 1499.7683275462964,
+   "p90": 2678.2950196759257,
+   "p99": 4014.5479082175925,
+   "share_le7d": 0.0,
+   "share_le30d": 0.0
+  },
+  "lifetime_comments": {
+   "p50": 8442.0,
+   "p90": 21615.499999999996,
+   "p99": 36190.549999999996
+  },
+  "lifetime_posts": {
+   "p50": 233.5,
+   "p90": 335.4
+  },
+  "samples": [
+   {
+    "author": "Carburetors_Are_Fun",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 774.9,
+    "lifetime_comments": 12624,
+    "lifetime_posts": 258,
+    "earliest_activity": 1609950381
+   },
+   {
+    "author": "Hobotango",
+    "stratum": "2-4条",
+    "week_comments": 4,
+    "delay_days": 213.3,
+    "lifetime_comments": 6184,
+    "lifetime_posts": 327,
+    "earliest_activity": 1658426344
+   },
+   {
+    "author": "Kaisdey",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 1793.4,
+    "lifetime_comments": 228,
+    "lifetime_posts": 35,
+    "earliest_activity": 1521934219
+   },
+   {
+    "author": "PogTuber",
+    "stratum": "5+条",
+    "week_comments": 6,
+    "delay_days": 44.3,
+    "lifetime_comments": 14675,
+    "lifetime_posts": 22,
+    "earliest_activity": 1673029608
+   },
+   {
+    "author": "Sarydus",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2042.0,
+    "lifetime_comments": 2283,
+    "lifetime_posts": 209,
+    "earliest_activity": 1500428854
+   },
+   {
+    "author": "burgerpossum",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 2000.9,
+    "lifetime_comments": 1536,
+    "lifetime_posts": 258,
+    "earliest_activity": 1504037402
+   },
+   {
+    "author": "devilthedankdawg",
+    "stratum": "2-4条",
+    "week_comments": 2,
+    "delay_days": 1206.1,
+    "lifetime_comments": 37810,
+    "lifetime_posts": 355,
+    "earliest_activity": 1572644585
+   },
+   {
+    "author": "rdmusic16",
+    "stratum": "1条",
+    "week_comments": 1,
+    "delay_days": 4163.0,
+    "lifetime_comments": 10700,
+    "lifetime_posts": 9,
+    "earliest_activity": 1317192468
+   }
+  ],
+  "errors": []
+ }
+}
