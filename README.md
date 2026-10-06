@@ -12,13 +12,13 @@
 | # | 问题 | 对应模块 |
 |---|---|---|
 | ① | 用户**现在处于什么状态**？ | L1 采集 → L2 特征 → L3 洞察（活跃度 / 兴趣迁移 / 流失风险） |
-| ② | 怎么用 **Agent** 把洞察变成决策？ | [harness/](./harness/) 六环节闭环：异常 → 分群 → 归因 → 风险 → 干预 → 实验 |
+| ② | 怎么用 **Agent** 把洞察变成决策？ | [harness/](./harness/) 六环节闭环：异常 → 分群 → 归因 → 风险 → 干预 → 实验；真实主链（facts → 干预队列 + 实验分组）+ 离线评测沙箱（策略效果验证）双轨 |
 | ③ | **如果干预**，会发生什么？ | 模拟环境轨（Roadmap S1–S5）：用户模拟器 → Uplift → Bandit → 接 Harness |
 
 ## 2. 一句话架构
 
 ```
-真实数据轨（状态层）                          模拟环境轨（决策层，Roadmap S1–S5）
+真实数据轨（状态层）                          离线评测沙箱（策略效果验证，S1–S4）
 ┌──────────────────────────────┐             ┌──────────────────────────────────┐
 │ L1 采集   TapTap 公开行为痕    │             │ S1 用户模拟器（生成器 + 响应函数） │
 │ L2 特征   五维特征表 + 时间线   │             │ S2 Uplift 干预效果建模            │
@@ -61,23 +61,26 @@ python L3_insights/model_churn.py
 python L3_insights/model_migration.py
 python L3_insights/build_facts.py
 
-# 4) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
+# 4) 真实主链：L3 facts → Agent 六环节决策（干预队列 + 实验分组；需先跑 1–3）
+python -m harness.run_real_agent --batch 50
+
+# 5) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
 python -m simulator.run_sim --no-fit --users 800     # 强制默认分布（公开仓路径）
 python -m simulator.tests                            # 确定性 / 校准 / 边界测试
 
-# 5) （S2）Uplift 干预效果建模：rct / full 双协议 + T-learner（离线可跑）
+# 6) （S2）Uplift 干预效果建模：rct / full 双协议 + T-learner（离线可跑）
 python -m uplift.run_uplift --no-fit --users 6000    # 训练 + 评测 + 落盘（默认双跑一致性校验）
 python -m uplift.tests                               # 协议完整性 / 无泄漏 / 策略端点测试
 
-# 6) （S3）Bandit 策略学习：LinUCB / Thompson + random / 固定臂 / oracle 参照（离线可跑）
+# 7) （S3）Bandit 策略学习：LinUCB / Thompson + random / 固定臂 / oracle 参照（离线可跑）
 python -m bandit.run_bandit --no-fit --users 6000    # 在线学习 + 审计冻结评测 + 落盘
 python -m bandit.tests                               # 无泄漏 / 端点 / 学习信号测试
 
-# 7) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
+# 8) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
 python -m harness.run_agent --no-fit --users 6000    # 六环节 + 带/不带 Critic 双模式对照
-python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 端到端测试
+python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 真实主链 / 端到端测试
 
-# 8) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
+# 9) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
 python -m report.build_report                        # 生成 report/index.html + _manifest.json
 python -m report.tests                               # 自包含 / 数字对源 / 隐私扫描测试
 ```
@@ -95,7 +98,7 @@ python -m report.tests                               # 自包含 / 数字对源 
 | L2 特征 | `features.csv`（200 × 99，五维 `id_/act_/taste_/rel_/inf_`）+ `timeline.jsonl` | 9,521 个行为事件（`time_kind = exact / approx / unknown`） |
 | L3 洞察 | `facts.jsonl`（Agent 唯一入口） | 200 行；活跃度五档 49/50/50/30/21；流失档 active 23 · d30 20 · **d60 132** · d90 25 |
 | 复现性 | 双跑逐字节一致；版本 / 锚点 / 输入指纹冻结 | `_manifest.json`（L2 / L3 各一份） |
-| Harness | 六环节骨架 + facts 契约层 + **S4 真干预接入** | `python -m harness.loop`（骨架）/ `python -m harness.run_agent`（双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
+| Harness | 六环节骨架 + facts 契约层 + **真实主链（facts→决策）** + **S4 真干预接入**（离线评测沙箱） | `python -m harness.run_real_agent`（200 人 facts：沉默占比 78.5%＝参考线 1.57 倍；人群 157 人；单批队列 50：control 43 / rec 7 / recall 0，剩 107 名额；实验 treatment 4 / holdout 3；双跑一致）/ `python -m harness.run_agent`（沙箱双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
 | S5 展示层 | [`report/index.html`](./report/index.html)（静态自包含，离线直开） | 9 节：真实轨 L1–L3 + S1–S4 关键数字 + 诚实边界；双跑逐字节一致（输入指纹冻结在 `_manifest.json`） |
 
 ## 5. 诚实边界（随结论一起引用）
@@ -103,6 +106,8 @@ python -m report.tests                               # 自包含 / 数字对源 
 - **样本**：200 人 pilot，来自「近期发表过评价 / 动态」的用户，`recency_days` 中位 81 天 → 结论不代表全站。
 - **流失标签**：单快照、无纵向回访 → 命名 `observed_inactivity`（公开活动沉默代理），**不是**平台真实流失；
   阈值 `calibration_status = uncalibrated`（未经运营反馈校准）。
+- **真实主链的干预臂**：来自启发式风险分档（`risk_band_heuristic_v0`，risk_score → recall / rec / control），
+  **不是因果收益估计**；效果验证走离线评测沙箱（S1–S4）与实验框架，主指标（未来 30 天公开行为沉默率）待观察窗回填。
 - **行为痕 ≠ 埋点**：只有发帖 / 评论 / 评分 / 收藏 / 关注 / 时间戳等公开痕迹；
   不含 App 埋点、曝光、停留、支付等内部数据——文中一律称「公开可观测行为痕」。
 - **时间线**：`unknown` 时间的事件（如粉丝列表无时间戳）不参与任何时间序列 / 迁移计算。
@@ -118,7 +123,7 @@ python -m report.tests                               # 自包含 / 数字对源 
 │   └── run_batch.py                    #   批次运行器：日预算慢跑 / 自动暂停 / 失败队列
 ├── L2_features/                        # 特征层：feature_dict 单一真源 + 特征表 + 时间线
 ├── L3_insights/                        # 洞察层：活跃度 M1 / 迁移 M2 / 流失 M3 → facts 契约
-├── harness/                            # 自研 Agent Harness：六组件骨架 + S4 接入层（bandit 工具 + Critic + 六环节组装）
+├── harness/                            # 自研 Agent Harness：六组件骨架 + 真实主链（facts→干预队列/实验分组）+ 沙箱接入层（bandit 工具 + Critic）
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── bandit/                             # S3 Bandit：部分反馈世界 + LinUCB/Thompson + 在线/审计两层评测

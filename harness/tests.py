@@ -15,10 +15,15 @@
        名额跑完后干预工具退出候选；圈人只落在在线池且满足可观测规则
     6. 端到端：六环节顺序执行 + 收工通过校验；干预批次人数；
        no_critic 路径零否决；两条路径审计得分都在 (0, 1] 内
+    7. 真实主链：facts→六环节顺序 + artifacts 键=工具名；双跑确定性；
+       干预队列分档数学 + 缺分数兜底；verifier 收工门槛与坏批次拒绝；
+       缺 facts 文件显式报错（纯内存 fixture，不依赖 data/processed）
 """
 from __future__ import annotations
 
+import hashlib
 from functools import lru_cache
+from pathlib import Path
 
 from bandit.policies import make_policy
 from bandit.protocol import ARMS, BanditWorld, build_world
@@ -29,7 +34,15 @@ from .critic import (
     DEFAULT_MIN_OBS, REQUIRED_FIELDS, CriticVerifier, InterventionCritic,
 )
 from .planner import FINISH_TOOL
+from .facts import FactsStore, load_facts
 from .run_agent import COHORT_NAME, build_registry, run_agent_demo, run_is_deterministic
+from .run_real_agent import (
+    REQUIRED_FIELDS as REAL_REQUIRED_FIELDS,
+    RealAgentConfig,
+    RealChainVerifier,
+    run_is_deterministic as real_run_is_deterministic,
+    run_real_agent,
+)
 from .state import AgentState
 
 # 测试用小人口（跑得快；逐值断言，非阈值型）
@@ -281,6 +294,130 @@ def test_e2e():
     for mode in ("with_critic", "no_critic"):
         frac = run["modes"][mode]["audit"]["audit_vs_oracle_frac"]
         assert 0.0 < frac <= 1.0, f"{mode} 审计得分异常：{frac}"
+
+
+# ── 7. 真实主链（facts → Agent 决策；纯内存 fixture，不依赖 data/processed）──
+
+def _real_fact(stage: str, risk: float | None) -> dict:
+    """造一条最小可用的 L3 fact（字段与 facts.jsonl 契约对齐）。"""
+    return {
+        "facts_version": "l3v1",
+        "as_of": 1791108404,
+        "quality": {"usable": True, "truncated_surfaces": ""},
+        "churn": {
+            "stage": stage, "risk_score": risk, "horizon_days": "30",
+            "drivers": ["staleness", "momentum"],
+        },
+        "activity": {"band": "dormant", "score": 10.0},
+        "migration": {"insufficient_data": True, "genre_shift_score": None, "game_flow_net": 0},
+        "context": {"sentiment_neg_rate": 0.1, "top_genres": [["二次元", 0.1]]},
+    }
+
+
+def _real_store() -> FactsStore:
+    """12 用户 fixture：8 人落人群档位（d60×5 / d90×3）+ 4 人对照档位。"""
+    facts = {
+        "h_01": _real_fact("dormant_60", 90.0),  # recall
+        "h_02": _real_fact("dormant_90", 85.0),  # recall
+        "h_03": _real_fact("dormant_60", 81.0),  # recall
+        "h_04": _real_fact("dormant_90", 70.0),  # rec
+        "h_05": _real_fact("dormant_60", 60.0),  # rec
+        "h_06": _real_fact("dormant_60", None),  # 缺分数 → control（批内第 6 顺位）
+        "h_07": _real_fact("dormant_90", 30.0),  # control（第 7 顺位，不在批内）
+        "h_08": _real_fact("dormant_60", 40.0),  # control（第 8 顺位，不在批内）
+        "h_09": _real_fact("silent", 95.0),      # 非人群档位（只为沉默占比贡献）
+        "h_10": _real_fact("active", 10.0),
+        "h_11": _real_fact("dormant_30", 55.0),
+        "h_12": _real_fact("churned", 88.0),
+    }
+    return FactsStore(facts)
+
+
+def test_real_chain_flow():
+    result = run_real_agent(_real_store(), RealAgentConfig(batch=6))
+    state = result["state"]
+    tools = [(h["decision"] or {}).get("tool") for h in state.history]
+    assert tools == [
+        "detect_anomaly", "locate_cohort", "analyze_cause", "assess_risk",
+        "plan_interventions", "design_experiment", FINISH_TOOL,
+    ], f"六环节顺序异常：{tools}"
+    assert all(h.get("verified") for h in state.history), "有步骤未通过校验"
+    assert set(state.artifacts) == set(REAL_REQUIRED_FIELDS), "artifacts 键应为六环节工具名"
+    assert state.context is not None, "context 未透传业务输入（facts 存储）"
+    assert result["finished"], "主链应在 max_steps 内收工"
+
+    plan = state.artifacts["plan_interventions"]
+    assert plan["batch_size"] == 6, "批大小异常"
+    assert plan["arms"] == {"control": 1, "rec": 2, "recall": 3}, f"分档结果异常：{plan['arms']}"
+    assert plan["stream_remaining"] == 2, "剩余名额异常"
+
+    design = state.artifacts["design_experiment"]
+    assert design["n_candidates"] == 5, "触达候选数异常"
+    assert design["n_treated"] + design["n_control"] == 5, "分组数应等于候选数"
+
+
+def test_real_chain_determinism():
+    a = run_real_agent(_real_store(), RealAgentConfig(batch=6))
+    b = run_real_agent(_real_store(), RealAgentConfig(batch=6))
+    assert real_run_is_deterministic(a, b), "真实主链双跑不一致"
+    assert a["experiment_id"] == "exp-1791108404-silence-recall-v0", "实验 id 派生异常"
+    assert len(a["queue"]) == 6 and len(a["assignments"]) == 5, "队列/分组行数异常"
+
+
+def test_real_plan_math():
+    result = run_real_agent(_real_store(), RealAgentConfig(batch=6))
+    queue = result["queue"]
+    assert [r["arm"] for r in queue] == ["recall", "recall", "recall", "rec", "rec", "control"]
+    missing = [r for r in queue if r["risk_score"] is None]
+    assert len(missing) == 1 and missing[0]["arm"] == "control", "缺分数应兜底不打扰"
+    assert all(r["policy"] == "risk_band_heuristic_v0" for r in queue), "队列应带规则版本"
+
+    groups = {r["uid_hash"]: r["group"] for r in result["assignments"]}
+    assert set(groups) == {f"h_0{i}" for i in range(1, 6)}, "候选应为本批触达行"
+    for row in result["assignments"]:
+        digest = hashlib.sha256(
+            f"{row['uid_hash']}|{result['experiment_id']}".encode("utf-8")
+        ).hexdigest()
+        expect = "holdout" if int(digest[:8], 16) % 100 < 50 else "treatment"
+        assert row["group"] == expect, "哈希分流与规则实现不符"
+
+
+def test_real_verifier():
+    v = RealChainVerifier()
+    ok, note = v.check({"tool": FINISH_TOOL}, None)
+    assert not ok and "干预" in note, "未完成干预队列前不得收工"
+
+    good = {
+        "batch": 1, "batch_size": 2, "arms": {"control": 1, "rec": 1, "recall": 0},
+        "cohort": "x", "stream_remaining": 3,
+        "policy": "risk_band_heuristic_v0", "rule_version": "risk_band_heuristic_v0",
+    }
+    ok, _ = v.check({"tool": "plan_interventions"}, good)
+    assert ok and v.intervention_ok, "合法批次应通过并解锁收工"
+    ok, _ = v.check({"tool": FINISH_TOOL}, None)
+    assert ok, "干预队列完成后应收工通过"
+
+    ok, _ = RealChainVerifier().check({"tool": "plan_interventions"}, {**good, "batch_size": 3})
+    assert not ok, "臂计数不闭合应被拒"
+    ok, _ = RealChainVerifier().check(
+        {"tool": "plan_interventions"}, {k: val for k, val in good.items() if k != "policy"}
+    )
+    assert not ok, "缺契约字段应被拒"
+
+    empty = {
+        "experiment_id": "e", "grouping": "A/B", "primary_metric": "m",
+        "n_treated": 0, "n_control": 0, "assignment_rule": "r",
+    }
+    ok, note = RealChainVerifier().check({"tool": "design_experiment"}, empty)
+    assert not ok and "空" in note, "空分组应被拒"
+
+
+def test_real_missing_file():
+    try:
+        load_facts(Path("__no_such_facts__.jsonl"))
+    except FileNotFoundError:
+        return
+    raise AssertionError("缺 facts 文件应显式报 FileNotFoundError")
 
 
 # ── 运行器 ──────────────────────────────────────────────────

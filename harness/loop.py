@@ -2,6 +2,7 @@
 
 学习点：Harness 主循环长什么样？
     读状态 → 决策 → （收工确认 | 执行）→ 校验 → 记录 → 是否继续。
+    校验通过的业务产物按工具名归档进 state.artifacts（失败不写，收工不写）。
     三类异常都不刚性中断，而是把错误写回"观察"让下一轮自愈：
       · 决策解析失败（信封带 error）→ 错误写回，重走；
       · 工具执行抛异常 → 异常文本写回，重走；
@@ -14,6 +15,8 @@
     python -m harness.loop
 """
 from __future__ import annotations
+
+from typing import Any
 
 from .model import ModelAdapter, MockModel
 from .planner import FINISH_TOOL, Planner
@@ -29,9 +32,10 @@ def run(
     verifier: Verifier | None = None,
     model: ModelAdapter | None = None,
     max_steps: int = 8,
+    context: Any = None,
 ) -> AgentState:
-    """主循环；组件都留了注入口：可替换、可 mock。"""
-    state = AgentState(goal=goal)
+    """主循环；组件都留了注入口：可替换、可 mock。context 为业务输入透传槽位。"""
+    state = AgentState(goal=goal, context=context)
     model = model or MockModel()
     planner = planner or Planner(model=model)
     verifier = verifier or Verifier()
@@ -68,6 +72,7 @@ def run(
                      verified=ok, note=note)
         if not ok:
             continue  # 校验不过关的处置策略待定案（见 verifier.py）
+        state.artifacts[decision["tool"]] = observation  # 校验通过才归档（键=工具名）
 
     if not finished:
         state.record(note="达到 max_steps 步数上限，循环机械终止（安全网）")
