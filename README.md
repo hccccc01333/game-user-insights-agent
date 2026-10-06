@@ -61,26 +61,30 @@ python L3_insights/model_churn.py
 python L3_insights/model_migration.py
 python L3_insights/build_facts.py
 
-# 4) 真实主链：L3 facts → Agent 六环节决策（干预队列 + 实验分组；需先跑 1–3）
+# 4) （M1）沉默预测正式版：公开行为痕 → 未来 30 天沉默风险，双协议评测 + 双跑校验（需先跑 2）
+python -m silence_risk.run_silence
+python -m silence_risk.tests                         # 手算面板 / 特征 / 协议完整性 / 无泄漏 / 确定性测试
+
+# 5) 真实主链：L3 facts → Agent 六环节决策（干预队列 + 实验分组；需先跑 1–3）
 python -m harness.run_real_agent --batch 50
 
-# 5) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
+# 6) （S1）用户模拟器：三臂干预实验 + 真值 CATE（离线可跑，不依赖任何数据文件）
 python -m simulator.run_sim --no-fit --users 800     # 强制默认分布（公开仓路径）
 python -m simulator.tests                            # 确定性 / 校准 / 边界测试
 
-# 6) （S2）Uplift 干预效果建模：rct / full 双协议 + T-learner（离线可跑）
+# 7) （S2）Uplift 干预效果建模：rct / full 双协议 + T-learner（离线可跑）
 python -m uplift.run_uplift --no-fit --users 6000    # 训练 + 评测 + 落盘（默认双跑一致性校验）
 python -m uplift.tests                               # 协议完整性 / 无泄漏 / 策略端点测试
 
-# 7) （S3）Bandit 策略学习：LinUCB / Thompson + random / 固定臂 / oracle 参照（离线可跑）
+# 8) （S3）Bandit 策略学习：LinUCB / Thompson + random / 固定臂 / oracle 参照（离线可跑）
 python -m bandit.run_bandit --no-fit --users 6000    # 在线学习 + 审计冻结评测 + 落盘
 python -m bandit.tests                               # 无泄漏 / 端点 / 学习信号测试
 
-# 8) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
+# 9) （S4）接 harness：Bandit 干预工具 + Critic 安全门，Agent 决策循环真调用（离线可跑）
 python -m harness.run_agent --no-fit --users 6000    # 六环节 + 带/不带 Critic 双模式对照
 python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 真实主链 / 端到端测试
 
-# 9) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
+# 10) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
 python -m report.build_report                        # 生成 report/index.html + _manifest.json
 python -m report.tests                               # 自包含 / 数字对源 / 隐私扫描测试
 ```
@@ -90,7 +94,7 @@ python -m report.tests                               # 自包含 / 数字对源 
 > 只保留代码与聚合校准结果；S1 模拟器的合成数据也不随仓分发——任何人可用
 > `python -m simulator.run_sim --no-fit --seed <种子>` 离线重生成（逐字节可复现）。
 
-## 4. 实测结果（2026-10-04 批次：pilot 200 人）
+## 4. 实测结果（2026-10-04 pilot 200 人；2026-10-06 扩采 400 人）
 
 | 环节 | 产出 | 关键数字 |
 |---|---|---|
@@ -100,6 +104,10 @@ python -m report.tests                               # 自包含 / 数字对源 
 | 复现性 | 双跑逐字节一致；版本 / 锚点 / 输入指纹冻结 | `_manifest.json`（L2 / L3 各一份） |
 | Harness | 六环节骨架 + facts 契约层 + **真实主链（facts→决策）** + **S4 真干预接入**（离线评测沙箱） | `python -m harness.run_real_agent`（200 人 facts：沉默占比 78.5%＝参考线 1.57 倍；人群 157 人；单批队列 50：control 43 / rec 7 / recall 0，剩 107 名额；实验 treatment 4 / holdout 3；双跑一致）/ `python -m harness.run_agent`（沙箱双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
 | S5 展示层 | [`report/index.html`](./report/index.html)（静态自包含，离线直开） | 9 节：真实轨 L1–L3 + S1–S4 关键数字 + 诚实边界；双跑逐字节一致（输入指纹冻结在 `_manifest.json`） |
+| M1 沉默预测 | [`silence_risk/`](./silence_risk/)：面板 → 特征 → 双协议评测（`silencev1`） | 400 人时间线：3,212 样本 / 360 用户；**时间外推 AUC 0.695 vs recency 0.628**（ΔAUC +0.067，95%CI [+0.037, +0.095]）→ M1 达标；hgb 未显著（过拟合，待调参） |
+
+> 2026-10-06：扩采至 400 人后 L1 / L2 已重跑（features 400 × 99、timeline 15,603 事件），L3 待重跑；
+> 上表 L1–S5 行为 200 人批次数字，M1 行为 400 人口径。
 
 ## 5. 诚实边界（随结论一起引用）
 
@@ -127,6 +135,7 @@ python -m report.tests                               # 自包含 / 数字对源 
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── bandit/                             # S3 Bandit：部分反馈世界 + LinUCB/Thompson + 在线/审计两层评测
+├── silence_risk/                       # M1 沉默预测：面板口径 + 多窗特征 + 双协议评测（外推验收 recency 基线）
 ├── report/                             # S5 展示层：全链路产出 → 静态自包含 HTML 报告（零依赖 / 离线直开）
 ├── scripts/reddit_calibration.py      # Reddit 公开数据 → 模拟器参数校准（分布锚点，非主锚）
 ├── calibration/                       # 校准产出（聚合参数与报告；原始抓取不入库）
