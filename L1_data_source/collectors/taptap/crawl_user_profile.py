@@ -35,7 +35,7 @@ import sys
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import parse_qsl, urlparse
+from urllib.parse import parse_qsl, unquote, urlparse
 
 import requests
 
@@ -92,8 +92,13 @@ def load_env_file(env_file: str) -> dict[str, str]:
 
 
 def resolve_xua(env_file: str) -> str | None:
-    """TAPTAP_X_UA：环境变量优先，其次 .env 文件；都没有 → None（调用方报错）。"""
-    return os.environ.get("TAPTAP_X_UA") or load_env_file(env_file).get("TAPTAP_X_UA")
+    """TAPTAP_X_UA：环境变量优先，其次 .env 文件；都没有 → None（调用方报错）。
+
+    从浏览器拷贝的 X-UA 常为百分号编码（%3D/%26），服务端按明文解析（实测
+    编码形式会报 INVALID_XUA），这里统一解码；已是明文的值不受影响。
+    """
+    raw = os.environ.get("TAPTAP_X_UA") or load_env_file(env_file).get("TAPTAP_X_UA")
+    return unquote(raw) if raw else None
 
 
 def resolve_salt(env_file: str, cli_salt: str) -> str | None:

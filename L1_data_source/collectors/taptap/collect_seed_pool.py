@@ -85,8 +85,7 @@ def collect_app(
             "from": page * PAGE_LIMIT,
             "limit": PAGE_LIMIT,
             "sort": "new",
-            "X-UA": xua,  # 与旧版网页端请求一致：X-UA 同时放 header 与 query
-        }
+        }  # X-UA 已由 Client 统一放请求头
         data, err = client.get(REVIEW_PATH, params)
         if data is None:
             note = f"停止：{err}"
