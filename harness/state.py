@@ -20,20 +20,25 @@ class AgentState:
     context: Any = None                                       # 业务输入透传（如只读 facts 存储）
     history: list[dict] = field(default_factory=list)         # 过程轨迹：每轮一条记录
     artifacts: dict[str, Any] = field(default_factory=dict)   # 通过校验的产物（键=工具名）
+    plan: Any = None                                          # 当前计划（模型在信封里给 plan 时更新）
 
     def record(self, **entry: Any) -> None:
-        """追加一条轨迹记录（四元组结构见下方定案记录）。"""
+        """追加一条轨迹记录（四元组结构 + kind 标注，见下方定案记录）。"""
         self.history.append(entry)
 
     def __repr__(self) -> str:
         return f"AgentState(goal={self.goal!r}, steps={len(self.history)})"
 
 
-# ── 定案记录（真实主链 realv0 起生效）───────────────────────
+# ── 定案记录（真实主链 realv0 起生效；v2 起补 kind / plan）──
 # 1. history 一条记录 = "决策 → 行动 → 观察 → 校验"四元组：
-#    step / decision / observation / verified / note。
+#    step / decision / observation / verified / note / kind。
+#    kind ∈ {tool_call, retry, replan, finish, decision_error, blocked, verify_fail}
+#    只标注确定性字段（不含耗时 / token——那些进 tracing，不进轨迹）。
 # 2. artifacts 的键 = 工具名（与各链契约 REQUIRED_FIELDS 的工具名一致）；
 #    写入时机 = 该轮校验通过后由 loop 统一写入（失败不写，收工不写）。
-# 3. 预算：步数上限由 loop 的 max_steps 机械控制；失败计数 / 时间戳暂不引入。
-# 4. 快照 / 回滚暂不引入：失败写回观察、下一轮自愈（见 loop.py）。
+# 3. 预算：步数上限由 loop 的 max_steps 机械控制；工具调用预算 max_tool_calls
+#    与单工具失败熔断 max_failures_per_tool 见 loop.py。
+# 4. plan：模型可在决策信封里附 plan 字段做计划修订，最新一版存在 state.plan。
+# 5. 快照 / 回滚暂不引入：失败写回观察、下一轮自愈（见 loop.py）。
 # ────────────────────────────────────────────────────────────

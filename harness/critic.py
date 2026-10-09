@@ -181,13 +181,13 @@ class InterventionCritic:
 # ── 循环级校验（接进 harness 的 Verifier 位）─────────────────
 
 class CriticVerifier(Verifier):
-    """S4 定案：六环节产物结构核对 + 干预完成度确认收工。
+    """S4 定案：六环节产物结构核对 + 业务断言 + 干预完成度确认收工。
 
     · 登记工具的输出必须含契约字段（REQUIRED_FIELDS）；
+    · 各环节业务断言（数字自洽）：占比 ∈ [0,1]、分档求和 = 总数、
+      圈人规模 ≥ 1、实验触达数 ≥ 1（见 _check_stage）；
     · 干预批次额外核对：三臂计数求和 = 批大小、veto_rate ∈ [0,1]、批大小 ≥ 1；
     · finish 提名：干预环节未通过校验前一律拒绝（防"没做事就收工"）。
-    其余工具的"业务断言"（数字是否自洽等）留待后续环节逐条定案——这里先按
-    "结构完整即放行"的占位口径处理，并在说明里如实标注。
     """
 
     def __init__(self) -> None:
@@ -211,8 +211,62 @@ class CriticVerifier(Verifier):
                     return False, note
                 self.intervention_ok = True
                 return True, "干预批次结构校验通过"
-            return True, f"占位校验：{tool} 结构完整（业务断言留待后续定案）"
+            ok, note = _check_stage(tool, observation)
+            if not ok:
+                return False, note
+            return True, f"业务断言通过：{tool}"
         return True, "占位校验：未登记工具放行"
+
+
+def _check_share(value: Any, name: str) -> tuple[bool, str]:
+    """占比类断言：[0,1] 内的数值（None 放行——显式缺失由工具语义决定）。"""
+    if value is None:
+        return True, ""
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False, f"{name} 不是数值：{value!r}"
+    if not (0.0 <= float(value) <= 1.0):
+        return False, f"{name} 越界 [0,1]：{value!r}"
+    return True, ""
+
+
+def _check_stage(tool: str, obs: dict) -> tuple[bool, str]:
+    """各环节的业务断言（数值自洽，不看真值 / 不看模型口径）。"""
+    if tool == "detect_anomaly":
+        if not isinstance(obs.get("delta_pct"), (int, float)) or isinstance(obs.get("delta_pct"), bool):
+            return False, f"delta_pct 不是数值：{obs.get('delta_pct')!r}"
+        return _check_share(obs.get("silent_share"), "silent_share")
+    if tool == "locate_cohort":
+        size = obs.get("size")
+        if isinstance(size, bool) or not isinstance(size, int) or size < 1:
+            return False, f"人群规模非法：{size!r}"
+        return _check_share(obs.get("share_of_online"), "share_of_online")
+    if tool == "analyze_cause":
+        if not obs.get("cohort"):
+            return False, "analyze_cause 缺人群名"
+        return True, ""
+    if tool == "assess_risk":
+        return _check_bands(obs.get("bands"), obs.get("n_total"))
+    if tool == "design_experiment":
+        n = obs.get("n_treated")
+        if isinstance(n, bool) or not isinstance(n, int) or n < 1:
+            return False, f"实验触达数非法（应 ≥ 1）：{n!r}"
+        return True, ""
+    return True, ""
+
+
+def _check_bands(bands: Any, n_total: Any) -> tuple[bool, str]:
+    """风险分档自洽：bands 为非负计数对象且求和 = n_total。"""
+    if not isinstance(bands, dict) or not bands:
+        return False, f"bands 不是计数对象：{bands!r}"
+    for k, v in bands.items():
+        if isinstance(v, bool) or not isinstance(v, int) or v < 0:
+            return False, f"bands[{k}] 不是非负整数：{v!r}"
+    if isinstance(n_total, bool) or not isinstance(n_total, int) or n_total < 0:
+        return False, f"n_total 非法：{n_total!r}"
+    total = sum(int(v) for v in bands.values())
+    if total != n_total:
+        return False, f"风险分档求和不闭合：{total} ≠ n_total {n_total}"
+    return True, ""
 
 
 def _check_batch(obs: dict) -> tuple[bool, str]:

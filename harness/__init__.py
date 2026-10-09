@@ -26,14 +26,22 @@ S4 接入层（把 S1–S3 的模拟环境资产接进决策循环；定位 = **
 
     run_real_agent.py  facts 六环节工具 + 干预规划 + RealChainVerifier + CLI（realv0）
 
+洞察主链（② 模型驱动的动态决策：工具调用路径不写死，由模型按目标与观察选择；
+mock/llm 双模型路径；评测见 agent_eval）：
+
+    tools/            业务工具层：8 个工具 + InsightVerifier + 注册 builder（tools_v0）
+    run_insight_agent.py  goal → 决策循环 → 报告/指标/清单落盘 + CLI（insightv0）
+
 运行演示（在仓库根目录执行）：
-    python -m harness.loop            # v1 骨架：占位工具 + MockModel
-    python -m harness.run_agent       # 沙箱：合成世界 + Bandit 干预工具 + Critic
-    python -m harness.run_real_agent  # 真实主链：L3 facts → 干预队列 + 实验分组
-    python -m harness.tests           # 测试
+    python -m harness.loop                # v1 骨架：占位工具 + MockModel
+    python -m harness.run_agent           # 沙箱：合成世界 + Bandit 干预工具 + Critic
+    python -m harness.run_real_agent      # 真实主链：L3 facts → 干预队列 + 实验分组
+    python -m harness.run_insight_agent   # 洞察主链：goal → 工具调用决策（mock 双跑）
+    python -m agent_eval.regression       # Agent 评测：6 场景 × 指标（mock 常在）
+    python -m harness.tests               # 测试
 """
 
 # S4 版本：换口径（工具批量口径 / Critic 规则 / 六环节演示流程）必须升版本
-HARNESS_VERSION = "s4v0"
+HARNESS_VERSION = "s4v1"
 
 __all__ = ["HARNESS_VERSION"]

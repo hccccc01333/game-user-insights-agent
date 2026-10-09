@@ -28,6 +28,10 @@ harness/  （六组件骨架 + S4 接入层）
         ├── critic.py        InterventionCritic：镜像后验 + 证据门槛 + 探索额度；
         │                    CriticVerifier：六环节字段契约 + 收工前干预确认
         ├── run_agent.py     六环节组装（真圈人）+ 带/不带 Critic 双模式 + CLI + 落盘
+        ├── run_real_agent.py 真实主链（realv0）：facts → 干预队列 + 实验分组
+        ├── tools/           8 业务工具（洞察链）+ InsightVerifier（业务断言）
+        ├── run_insight_agent.py 洞察主链（insightv0）：模型驱动的动态决策循环
+        ├── tracing.py       执行追踪旁路（耗时 / 用量；不进确定性轨迹）
         └── tests.py         零泄漏 / 门控行为 / 结构校验 / 前置条件 / 端到端确定性
                 ▼
 data/synthetic/harness/   （合成数据，gitignored；可随时按种子重生成）
@@ -125,10 +129,40 @@ CLI：`--users --days --window --seed --audit --policy --basis --batch --critic-
 
 ---
 
-## 7. 已知局限（诚实清单）
+## 7. 洞察主链与 Agent 评测（P1 新增）
 
-1. **MockModel 演示**：离线循环用规则模型（挑未用过的工具），不是 LLM 决策——六环节顺序由 `when` 链保证；换真模型接 `ModelAdapter` 即可。
-2. **占位校验**：CriticVerifier 目前对干预批次做结构核对（计数求和 / 比例范围 / 字段契约），其余环节"结构完整即放行"——业务断言（数字自洽性）留待逐条定案。
+> 定位差别：`run_agent` / `run_real_agent` 是**固定工作流**（`when` 链驱动的确定性六环节）；`run_insight_agent` 是**模型驱动的动态决策**——工具调用路径不写死，由模型看目标、候选与观察逐轮决定继续 / 重试 / 改道 / 收工。
+
+**8 个业务工具（`harness/tools/`）**：把 L1–L3 事实、沉默预测工件与离线沙箱封装成 Agent 可调用能力（参数 Schema + 权限串 + 口径诚实标注）。
+
+| 工具 | 权限 | 说明 |
+|---|---|---|
+| `get_user_behavior` / `analyze_activity` / `analyze_interest_migration` | `facts:read` | 时间线只读摘要 / 活跃度画像 / 兴趣迁移信号（缺失显式 null） |
+| `predict_silence_risk` | `model:predict` | 离线工件推理；不适用显式给原因（工件缺失则不注册） |
+| `get_risk_cohort` | `facts:read` | 按档位 + 风险分圈人（产出确定性 cohort_id）；空结果显式报错 |
+| `plan_intervention` | `intervention:plan` | 启发式分档队列（复用 `risk_band_heuristic_v0`；非因果收益估计） |
+| `evaluate_strategy` | `sandbox:evaluate` | 离线合成沙箱审计评测（oracle 显式拒绝作为可部署策略） |
+| `generate_insight_report` | `report:generate` | 汇总事实生成报告（证据字段 + 建议 + 口径 caveats） |
+
+**决策循环（`insightv0`）**：目标 → 候选收窄（前置条件 + 权限）→ 模型决策（信封 `{"tool","args","reason","plan"}`）→ 执行（Schema 校验）→ `InsightVerifier` 业务断言 → 观察写回 → 下一轮。两条模型路径：`--model mock`（离线桩，同参双跑逐值对拍）与 `--model llm`（DeepSeek / OpenAI 兼容，`LLM_API_KEY`，超时退避重试 + 用量统计）。
+
+**Agent 评测（`agent_eval/` v1）**：6 个场景（正常 / 数据缺失 / 工具超时 / 结果冲突 / 错误的风险解释 / 权限不足）× mock / llm 双模式；指标覆盖任务成功率、工具选择与参数准确率、步骤 · tokens · 耗时 · 成本、事实可靠性、错误恢复率、Critic 与权限拦截、稳定性（mock 双跑逐值一致）。
+
+```bash
+python -m harness.run_insight_agent                    # 洞察主链：真实工件 + mock 双跑
+python -m harness.run_insight_agent --model llm        # 真实模型（需 LLM_API_KEY）
+python -m agent_eval.regression                        # 6 场景 mock 回归（双跑对拍 + 硬期望门槛）
+python -m agent_eval.regression --model llm --repeat 3 # 端到端能力评测（成功率的多次执行口径）
+```
+
+产出（`data/processed/harness_insight/` 与 `data/processed/agent_eval/`）：轨迹 / 产物 / 干预队列 / 报告 / 指标 / `_manifest.json`；仅 `uid_hash` 与派生字段，不含昵称、原文、ip/device。
+
+---
+
+## 8. 已知局限（诚实清单）
+
+1. **两条链的模型口径不同**：六环节链（`run_agent` / `run_real_agent`）离线演示仍走 MockModel（挑未用过工具的规则模型，顺序由 `when` 链保证）；动态 LLM 决策在洞察主链（`run_insight_agent --model llm`）——真实模型的端到端评测需自备 `LLM_API_KEY`。
+2. **校验深度分层**：`InsightVerifier` 已做业务断言（概率范围 / 分档闭合 / 口径矛盾 / 证据非空）；`CriticVerifier` 对干预批次做结构核对（计数求和 / 比例范围 / 字段契约），其余环节"结构完整即放行"。
 3. **单批演示规模**：默认只跑批 1（200 人）就收工（`max_steps = 8`）；干预工具支持多批直至人群名额跑完（tests 覆盖），多批学习曲线留给后续版本。
 4. **无疲劳、无延迟反馈**：沿用 S3 批量一次性口径；日粒度在线迭代是后续版本的事。
 5. **无预算 / 公平约束**：每条臂成本已入净奖励，但无全局约束。

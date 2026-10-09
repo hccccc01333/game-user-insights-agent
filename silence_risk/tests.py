@@ -12,7 +12,8 @@
     4. 协议完整性：group_cv 折内 uid 不跨 + OOF 全覆盖；time_extrap 切分不重叠且并集完整
     5. 无泄漏：特征列白名单；未来事件不影响既往锚点的特征
     6. 确定性：同参同种子端到端双跑一致；bootstrap 同种子可复现、换种子变；换 seed 模型分数变
-    7. 边界：非法面板参数 / 特征集 / cv / top_frac / 切分两侧为空 / 单一类别 均显式报错
+    7. 模型工件：训练落盘 / 读回 / 单用户打分语义（适用 / 静默 / 历史不足 / 查无此人）/ 探针双跑
+    8. 边界：非法面板参数 / 特征集 / cv / top_frac / 切分两侧为空 / 单一类别 均显式报错
 """
 from __future__ import annotations
 
@@ -31,8 +32,11 @@ from .evaluate import (
 )
 from .features import ALL_FEATURE_COLUMNS, FEATURE_SETS, build_features, feature_columns
 from .models import make_classifier
-from .panel import PanelConfig, build_panel
+from .panel import PanelConfig, build_panel, load_jsonl
 from .run_silence import group_cv_oof, run_all, run_is_deterministic
+from .artifact import (
+    SilencePredictor, load_artifact, probe_hash, save_artifact, train_artifact,
+)
 
 TZ_CN = timezone(timedelta(hours=8))
 BASE = 1735660800  # 2025-01-01T00:00:00+08:00
@@ -269,7 +273,58 @@ def test_determinism():
         assert set(ab) == {"logreg", "hgb"} and all("delta" in ab[l] for l in ab)
 
 
-# ── 7. 边界与显式报错 ───────────────────────────────────────
+# ── 7. 模型工件：落盘 / 读回 / 打分语义 / 双跑 ──────────────
+
+def test_artifact_roundtrip():
+    timeline, index = _syn_files()
+    kw = dict(timeline_path=timeline, index_path=index, cfg=PanelConfig(),
+              learner="logreg", seed=7, feature_set="trunk")
+    run = train_artifact(**kw)
+    meta = run["meta"]
+    assert meta["n_train"] > 0 and meta["n_users"] > 0
+    assert meta["feature_set"] == "trunk" and len(meta["columns"]) == 7
+    assert meta["as_of_ts"] == BASE + 470 * D, "as_of 应取 index 里最大 fetched_at"
+    assert 0.0 <= meta["train_sanity"]["roc_auc"] <= 1.0
+
+    # 双跑确定性：同参同种子探针一致
+    again = train_artifact(**kw)
+    probe = probe_hash(run["features"], meta, run["model"])
+    assert probe_hash(again["features"], again["meta"], again["model"]) == probe, \
+        "同参同种子双跑探针不一致"
+
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "silence_model.pkl"
+        files = save_artifact(run["model"], meta, path)
+        assert Path(td).joinpath("silence_model.meta.json").exists() and files["model"]["bytes"] > 0
+        payload = load_artifact(path)
+        assert payload["meta"]["columns"] == meta["columns"]
+        pred = SilencePredictor.load(path, index_path=index)
+    assert pred.default_as_of_ts() == BASE + 470 * D
+
+    recs = load_jsonl(timeline)
+    # 活跃用户（事件到 day 444，观测终点 470）：适用，gap=26
+    s_act = pred.score_user(recs, "h_act00")
+    assert s_act["applicable"] and 0.0 <= s_act["score"] <= 1.0 and s_act["gap_days"] == 26.0
+    # 静默用户（事件止于 day 374）：以观测终点 470 提问 → 近期无活动，不硬打分
+    s_sil = pred.score_user(recs, "h_sil00")
+    assert (not s_sil["applicable"]) and s_sil["reason"] == "no_recent_activity"
+    assert s_sil["score"] is None
+    # 显式 as_of 覆盖 fetched_at 表：day 380 提问时该用户适用（事件在 (350,380]）
+    s_ov = pred.score_user(recs, "h_sil00", as_of_ts=BASE + 380 * D)
+    assert s_ov["applicable"] and s_ov["gap_days"] == 6.0
+    # 查无此人 / 历史不足：显式原因，不硬打分
+    assert pred.score_user(recs, "no_such_user")["reason"] == "no_exact_events"
+    newbie = [{"event_id": "e1", "uid_hash": "h_new", "event_type": "post",
+               "event_ts": BASE + 1000 * D, "time_kind": "exact"}]
+    assert pred.score_user(newbie, "h_new", as_of_ts=BASE + 1010 * D)["reason"] == "history_too_short"
+    # 批量：uids 缺省 = 全部用户；列序固定
+    bulk = pred.score_records(recs)
+    assert list(bulk.columns) == ["uid_hash", "as_of_ts", "applicable", "reason",
+                                  "n_pre", "gap_days", "score"]
+    assert len(bulk) == len({r["uid_hash"] for r in recs}) and bulk["applicable"].sum() > 0
+
+
+# ── 8. 边界与显式报错 ───────────────────────────────────────
 
 def test_boundaries():
     def expect_error(fn, *a, **kw):

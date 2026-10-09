@@ -12,7 +12,7 @@
 | # | 问题 | 对应模块 |
 |---|---|---|
 | ① | 用户**现在处于什么状态**？ | L1 采集 → L2 特征 → L3 洞察（活跃度 / 兴趣迁移 / 流失风险） |
-| ② | 怎么用 **Agent** 把洞察变成决策？ | [harness/](./harness/) 六环节闭环：异常 → 分群 → 归因 → 风险 → 干预 → 实验；真实主链（facts → 干预队列 + 实验分组）+ 离线评测沙箱（策略效果验证）双轨 |
+| ② | 怎么用 **Agent** 把洞察变成决策？ | [harness/](./harness/) 六环节闭环：异常 → 分群 → 归因 → 风险 → 干预 → 实验；真实主链（facts → 干预队列 + 实验分组）+ 离线评测沙箱（策略效果验证）双轨；**洞察主链**（8 业务工具 + 模型驱动动态决策）+ [Agent 评测](./agent_eval/) |
 | ③ | **如果干预**，会发生什么？ | 模拟环境轨（Roadmap S1–S5）：用户模拟器 → Uplift → Bandit → 接 Harness |
 
 ## 2. 一句话架构
@@ -84,7 +84,15 @@ python -m bandit.tests                               # 无泄漏 / 端点 / 学�
 python -m harness.run_agent --no-fit --users 6000    # 六环节 + 带/不带 Critic 双模式对照
 python -m harness.tests                              # 零泄漏 / 门控 / 结构 / 真实主链 / 端到端测试
 
-# 10) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
+# 10) （P1）洞察主链：8 业务工具 + 模型驱动动态决策（需先跑 2–4 生成 facts 与沉默工件）
+python -m harness.run_insight_agent                  # mock 模型 + 真实工件；默认双跑逐值对拍
+python -m harness.run_insight_agent --model llm      # 真实模型（DeepSeek / OpenAI 兼容，需 LLM_API_KEY）
+
+# 11) （P1）Agent 评测：6 场景（正常 / 缺失 / 超时 / 冲突 / 错解释 / 越权）× mock / llm 双模式
+python -m agent_eval.regression                      # mock 回归：双跑一致 + 声明式硬期望门槛
+python -m agent_eval.regression --model llm --repeat 3   # 端到端：多次执行口径的任务成功率
+
+# 12) （S5）展示层：全链路产出汇总为静态自包含 HTML 报告（离线直开，含双跑校验）
 python -m report.build_report                        # 生成 report/index.html + _manifest.json
 python -m report.tests                               # 自包含 / 数字对源 / 隐私扫描测试
 ```
@@ -105,9 +113,11 @@ python -m report.tests                               # 自包含 / 数字对源 
 | Harness | 六环节骨架 + facts 契约层 + **真实主链（facts→决策）** + **S4 真干预接入**（离线评测沙箱） | `python -m harness.run_real_agent`（200 人 facts：沉默占比 78.5%＝参考线 1.57 倍；人群 157 人；单批队列 50：control 43 / rec 7 / recall 0，剩 107 名额；实验 treatment 4 / holdout 3；双跑一致）/ `python -m harness.run_agent`（沙箱双模式演示：否决率 2.5%，审计得分 0.788 = oracle 的 78.8%） |
 | S5 展示层 | [`report/index.html`](./report/index.html)（静态自包含，离线直开） | 9 节：真实轨 L1–L3 + S1–S4 关键数字 + 诚实边界；双跑逐字节一致（输入指纹冻结在 `_manifest.json`） |
 | M1 沉默预测 | [`silence_risk/`](./silence_risk/)：面板 → 特征 → 双协议评测（`silencev1`） | 400 人时间线：3,212 样本 / 360 用户；**时间外推 AUC 0.695 vs recency 0.628**（ΔAUC +0.067，95%CI [+0.037, +0.095]）→ M1 达标；hgb 未显著（过拟合，待调参） |
+| Agent 洞察链（P1） | [`harness/run_insight_agent.py`](./harness/run_insight_agent.py) + [`agent_eval/`](./agent_eval/)（6 场景） | mock 9 步 8 工具收工（200 人 facts → cohort 26 人 13.0% → 干预队列 20 人 → 报告 n=26）；评测全过：**任务成功率 1.0**、错误恢复 4/4、越权执行 0、双跑逐值一致 True |
 
 > 2026-10-06：扩采至 400 人后 L1 / L2 已重跑（features 400 × 99、timeline 15,603 事件），L3 待重跑；
-> 上表 L1–S5 行为 200 人批次数字，M1 行为 400 人口径。
+> 上表 L1–S5 行为 200 人批次数字，M1 行为 400 人口径；
+> P1 行（Agent 洞察链与评测）为 mock 模型口径（真实 LLM 端到端评测需自备 `LLM_API_KEY`）。
 
 ## 5. 诚实边界（随结论一起引用）
 
@@ -131,7 +141,8 @@ python -m report.tests                               # 自包含 / 数字对源 
 │   └── run_batch.py                    #   批次运行器：日预算慢跑 / 自动暂停 / 失败队列
 ├── L2_features/                        # 特征层：feature_dict 单一真源 + 特征表 + 时间线
 ├── L3_insights/                        # 洞察层：活跃度 M1 / 迁移 M2 / 流失 M3 → facts 契约
-├── harness/                            # 自研 Agent Harness：六组件骨架 + 真实主链（facts→干预队列/实验分组）+ 沙箱接入层（bandit 工具 + Critic）
+├── harness/                            # 自研 Agent Harness：六组件骨架 + 真实主链（facts→干预队列/实验分组）+ 沙箱接入层（bandit 工具 + Critic）+ 洞察主链（8 业务工具 + LLM 动态决策）
+├── agent_eval/                         # Agent 评测（P1）：6 场景任务集 + 决策/安全/恢复指标 + mock / LLM 双模式回归
 ├── simulator/                          # S1 用户模拟器：合成人口 / 三臂效应 / 日步长配对环境 / 真值 CATE
 ├── uplift/                             # S2 Uplift：rct/full 双协议 + T-learner + 保真度/校准/策略价值评测
 ├── bandit/                             # S3 Bandit：部分反馈世界 + LinUCB/Thompson + 在线/审计两层评测

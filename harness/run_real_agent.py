@@ -416,12 +416,13 @@ def build_registry(
 # ── 循环级校验（真实主链版 Verifier）────────────────────────
 
 class RealChainVerifier(Verifier):
-    """真实主链的循环级校验：结构核对 + "干预队列完成才能收工"。
+    """真实主链的循环级校验：结构核对 + 业务断言 + "干预队列完成才能收工"。
 
     · 登记工具的输出必须含契约字段（REQUIRED_FIELDS）；
+    · 各环节业务断言（数字自洽）：占比 ∈ [0,1]、stage_mix / bands 求和 = n_total、
+      圈人规模 ≥ 1、实验分组非空；
     · plan_interventions 额外核对：batch_size ≥ 1、臂计数求和 = batch_size、
       stream_remaining ≥ 0；
-    · design_experiment 额外核对：treatment + holdout ≥ 1（空分组拒绝）；
     · finish 提名：干预队列未通过校验前一律拒绝（防"没做事就收工"）。
     """
 
@@ -451,8 +452,51 @@ class RealChainVerifier(Verifier):
                 if n < 1:
                     return False, f"实验分组候选为空（treatment + holdout = {n}）"
                 return True, "实验设计结构校验通过"
-            return True, f"结构核对通过：{tool}（业务断言留待后续定案）"
+            ok, note = _check_real_stage(tool, observation)
+            if not ok:
+                return False, note
+            return True, f"业务断言通过：{tool}"
         return True, "未登记工具放行"
+
+
+def _check_real_stage(tool: str, obs: dict) -> tuple[bool, str]:
+    """真实主链各环节的业务断言（数值自洽，不看模型口径）。"""
+    if tool == "detect_anomaly":
+        share = obs.get("inactive_share")
+        if isinstance(share, bool) or not isinstance(share, (int, float)) or not (0.0 <= float(share) <= 1.0):
+            return False, f"inactive_share 越界 [0,1]：{share!r}"
+        mix, n_total = obs.get("stage_mix"), obs.get("n_total")
+        if not isinstance(mix, dict) or not mix:
+            return False, f"stage_mix 不是计数对象：{mix!r}"
+        if isinstance(n_total, bool) or not isinstance(n_total, int) or n_total < 1:
+            return False, f"n_total 非法：{n_total!r}"
+        if sum(int(v) for v in mix.values()) != n_total:
+            return False, f"stage_mix 求和不闭合：{sum(int(v) for v in mix.values())} ≠ n_total {n_total}"
+        return True, ""
+    if tool == "locate_cohort":
+        size = obs.get("size")
+        if isinstance(size, bool) or not isinstance(size, int) or size < 1:
+            return False, f"人群规模非法：{size!r}"
+        share = obs.get("share_of_usable")
+        if share is not None and (isinstance(share, bool) or not isinstance(share, (int, float))
+                                  or not (0.0 <= float(share) <= 1.0)):
+            return False, f"share_of_usable 越界 [0,1]：{share!r}"
+        return True, ""
+    if tool == "analyze_cause":
+        n = obs.get("n_total")
+        if isinstance(n, bool) or not isinstance(n, int) or n < 1:
+            return False, f"人群样本数非法：{n!r}"
+        return True, ""
+    if tool == "assess_risk":
+        bands, n_total = obs.get("bands"), obs.get("n_total")
+        if not isinstance(bands, dict) or not bands:
+            return False, f"bands 不是计数对象：{bands!r}"
+        if isinstance(n_total, bool) or not isinstance(n_total, int) or n_total < 0:
+            return False, f"n_total 非法：{n_total!r}"
+        if sum(int(v) for v in bands.values()) != n_total:
+            return False, f"风险分档求和不闭合：{sum(int(v) for v in bands.values())} ≠ n_total {n_total}"
+        return True, ""
+    return True, ""
 
 
 def _check_plan(obs: dict) -> tuple[bool, str]:
